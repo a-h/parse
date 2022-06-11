@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-func TestRuneFunction(t *testing.T) {
+func TestRuneWhere(t *testing.T) {
 	tests := []struct {
 		name          string
 		input         string
@@ -16,14 +16,14 @@ func TestRuneFunction(t *testing.T) {
 		{
 			name:          "no match",
 			input:         "ABCDEF",
-			parser:        RuneFunction(func(r rune) bool { return r == 'a' }),
+			parser:        RuneWhere(func(r rune) bool { return r == 'a' }),
 			expectedMatch: "",
 			expectedOK:    false,
 		},
 		{
 			name:  "match",
 			input: "ABCDEF",
-			parser: RuneFunction(func(r rune) bool {
+			parser: RuneWhere(func(r rune) bool {
 				return unicode.IsUpper(r)
 			}),
 			expectedMatch: "A",

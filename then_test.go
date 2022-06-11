@@ -8,8 +8,8 @@ func TestThen(t *testing.T) {
 	tests := []struct {
 		name          string
 		input         string
-		parser        Parser[ThenResult[string, string]]
-		expectedMatch ThenResult[string, string]
+		parser        Parser[SequenceOf2Result[string, string]]
+		expectedMatch SequenceOf2Result[string, string]
 		expectedOK    bool
 	}{
 		{
@@ -22,7 +22,7 @@ func TestThen(t *testing.T) {
 			name:   "matches",
 			input:  "ABCDEF",
 			parser: Then(String("ABC"), String("DEF")),
-			expectedMatch: ThenResult[string, string]{
+			expectedMatch: SequenceOf2Result[string, string]{
 				A: "ABC",
 				B: "DEF",
 			},
