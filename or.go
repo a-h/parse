@@ -1,16 +1,11 @@
 package parse
 
-type OrParser[A any, B any] struct {
+type orParser[A any, B any] struct {
 	A Parser[A]
 	B Parser[B]
 }
 
-type OrResult[A any, B any] struct {
-	A OptionalResult[A]
-	B OptionalResult[B]
-}
-
-func (p OrParser[A, B]) Parse(in Input) (match OrResult[A, B], ok bool, err error) {
+func (p orParser[A, B]) Parse(in Input) (match OrResult[A, B], ok bool, err error) {
 	a, ok, err := p.A.Parse(in)
 	if err != nil {
 		return
@@ -40,8 +35,15 @@ func (p OrParser[A, B]) Parse(in Input) (match OrResult[A, B], ok bool, err erro
 	return
 }
 
-func Or[A any, B any](a Parser[A], b Parser[B]) OrParser[A, B] {
-	return OrParser[A, B]{
+type OrResult[A any, B any] struct {
+	A OptionalResult[A]
+	B OptionalResult[B]
+}
+
+// Or returns a success if either a or b can be parsed.
+// If both a and b match, a takes precedence.
+func Or[A any, B any](a Parser[A], b Parser[B]) Parser[OrResult[A, B]] {
+	return orParser[A, B]{
 		A: a,
 		B: b,
 	}

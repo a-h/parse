@@ -1,5 +1,6 @@
 package parse
 
+// NewInput creates an input from the given string.
 func NewInput(s string) *InputString {
 	ip := &InputString{
 		s:         s,
@@ -13,6 +14,8 @@ func NewInput(s string) *InputString {
 	return ip
 }
 
+// InputString is an input used by parsers. It stores the current location
+// and character positions.
 type InputString struct {
 	s         string
 	charIndex int

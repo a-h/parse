@@ -4,11 +4,11 @@ import (
 	"regexp"
 )
 
-type RegexpParser struct {
+type regexpParser struct {
 	Expression *regexp.Regexp
 }
 
-func (p RegexpParser) Parse(in Input) (match string, ok bool, err error) {
+func (p regexpParser) Parse(in Input) (match string, ok bool, err error) {
 	remainder, ok := in.Peek(-1)
 	if !ok {
 		return
@@ -23,19 +23,22 @@ func (p RegexpParser) Parse(in Input) (match string, ok bool, err error) {
 	return
 }
 
-func Regexp(s string) (p Parser[string], err error) {
-	r, err := regexp.Compile(s)
+// Regexp creates a parser that parses from the input's current position, or fails.
+func Regexp(exp string) (p Parser[string], err error) {
+	r, err := regexp.Compile(exp)
 	if err != nil {
 		return
 	}
-	p = RegexpParser{
+	p = regexpParser{
 		Expression: r,
 	}
 	return
 }
 
-func MustRegexp(s string) (p Parser[string]) {
-	p, err := Regexp(s)
+// MustRegexp creates a parse that parses from the input's current position.
+// Passing in a regular expression that doesn't compile will result in a panic.
+func MustRegexp(exp string) (p Parser[string]) {
+	p, err := Regexp(exp)
 	if err != nil {
 		panic(err)
 	}

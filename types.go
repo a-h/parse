@@ -15,6 +15,7 @@ type Input interface {
 	Seek(index int) (ok bool)
 }
 
+// Parser is implemented by all parsers.
 type Parser[T any] interface {
 	Parse(in Input) (item T, ok bool, err error)
 }

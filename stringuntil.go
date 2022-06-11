@@ -1,11 +1,11 @@
 package parse
 
-type StringUntilParser[T any] struct {
+type stringUntilParser[T any] struct {
 	Delimiter Parser[T]
 	AllowEOF  bool
 }
 
-func (p StringUntilParser[T]) Parse(in Input) (match string, ok bool, err error) {
+func (p stringUntilParser[T]) Parse(in Input) (match string, ok bool, err error) {
 	start := in.Index()
 	for {
 		beforeDelimiter := in.Index()
@@ -31,14 +31,16 @@ func (p StringUntilParser[T]) Parse(in Input) (match string, ok bool, err error)
 	return
 }
 
+// StringUntil matches until the delimiter is reached.
 func StringUntil[T any](delimiter Parser[T]) Parser[string] {
-	return StringUntilParser[T]{
+	return stringUntilParser[T]{
 		Delimiter: delimiter,
 	}
 }
 
+// StringUntilEOF matches until the delimiter or the end of the file is reached.
 func StringUntilEOF[T any](delimiter Parser[T]) Parser[string] {
-	return StringUntilParser[T]{
+	return stringUntilParser[T]{
 		Delimiter: delimiter,
 		AllowEOF:  true,
 	}

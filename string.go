@@ -2,12 +2,12 @@ package parse
 
 import "strings"
 
-type StringParser struct {
+type stringParser struct {
 	Match       string
 	Insensitive bool
 }
 
-func (p StringParser) Parse(in Input) (match string, ok bool, err error) {
+func (p stringParser) Parse(in Input) (match string, ok bool, err error) {
 	match, ok = in.Peek(len(p.Match))
 	if !ok {
 		return
@@ -25,14 +25,16 @@ func (p StringParser) Parse(in Input) (match string, ok bool, err error) {
 	return
 }
 
+// String matches a given string constant.
 func String(s string) Parser[string] {
-	return StringParser{
+	return stringParser{
 		Match: s,
 	}
 }
 
+// StringInsensitive matches a given string constant using Unicode case folding.
 func StringInsensitive(s string) Parser[string] {
-	return StringParser{
+	return stringParser{
 		Match:       s,
 		Insensitive: true,
 	}

@@ -1,16 +1,11 @@
 package parse
 
-type SequenceOf2Parser[A, B any] struct {
+type sequenceOf2Parser[A, B any] struct {
 	A Parser[A]
 	B Parser[B]
 }
 
-type SequenceOf2Result[A, B any] struct {
-	A A
-	B B
-}
-
-func (p SequenceOf2Parser[A, B]) Parse(in Input) (match SequenceOf2Result[A, B], ok bool, err error) {
+func (p sequenceOf2Parser[A, B]) Parse(in Input) (match SequenceOf2Result[A, B], ok bool, err error) {
 	a, ok, err := p.A.Parse(in)
 	if err != nil {
 		return
@@ -31,26 +26,25 @@ func (p SequenceOf2Parser[A, B]) Parse(in Input) (match SequenceOf2Result[A, B],
 	return
 }
 
-func SequenceOf2[A, B any](a Parser[A], b Parser[B]) SequenceOf2Parser[A, B] {
-	return SequenceOf2Parser[A, B]{
+type SequenceOf2Result[A, B any] struct {
+	A A
+	B B
+}
+
+func SequenceOf2[A, B any](a Parser[A], b Parser[B]) Parser[SequenceOf2Result[A, B]] {
+	return sequenceOf2Parser[A, B]{
 		A: a,
 		B: b,
 	}
 }
 
-type SequenceOf3Parser[A, B, C any] struct {
-	SequenceOf2Parser[A, B]
+type sequenceOf3Parser[A, B, C any] struct {
+	Parser[SequenceOf2Result[A, B]]
 	C Parser[C]
 }
 
-type SequenceOf3Result[A, B, C any] struct {
-	A A
-	B B
-	C C
-}
-
-func (p SequenceOf3Parser[A, B, C]) Parse(in Input) (match SequenceOf3Result[A, B, C], ok bool, err error) {
-	prefix, ok, err := p.SequenceOf2Parser.Parse(in)
+func (p sequenceOf3Parser[A, B, C]) Parse(in Input) (match SequenceOf3Result[A, B, C], ok bool, err error) {
+	prefix, ok, err := p.Parser.Parse(in)
 	if err != nil {
 		return
 	}
@@ -71,9 +65,15 @@ func (p SequenceOf3Parser[A, B, C]) Parse(in Input) (match SequenceOf3Result[A, 
 	return
 }
 
-func SequenceOf3[A, B, C any](a Parser[A], b Parser[B], c Parser[C]) SequenceOf3Parser[A, B, C] {
-	return SequenceOf3Parser[A, B, C]{
-		SequenceOf2Parser: SequenceOf2(a, b),
-		C:                 c,
+type SequenceOf3Result[A, B, C any] struct {
+	A A
+	B B
+	C C
+}
+
+func SequenceOf3[A, B, C any](a Parser[A], b Parser[B], c Parser[C]) Parser[SequenceOf3Result[A, B, C]] {
+	return sequenceOf3Parser[A, B, C]{
+		Parser: SequenceOf2(a, b),
+		C:      c,
 	}
 }
