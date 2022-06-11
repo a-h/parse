@@ -1,7 +1,5 @@
 package parse
 
-import "io"
-
 type SequenceOf2Parser[A, B any] struct {
 	A Parser[A]
 	B Parser[B]
@@ -14,7 +12,7 @@ type SequenceOf2Result[A, B any] struct {
 
 func (p SequenceOf2Parser[A, B]) Parse(in Input) (match SequenceOf2Result[A, B], ok bool, err error) {
 	a, ok, err := p.A.Parse(in)
-	if err != nil && err != io.EOF {
+	if err != nil {
 		return
 	}
 	if !ok {
@@ -22,7 +20,7 @@ func (p SequenceOf2Parser[A, B]) Parse(in Input) (match SequenceOf2Result[A, B],
 	}
 	match.A = a
 	b, ok, err := p.B.Parse(in)
-	if err != nil && err != io.EOF {
+	if err != nil {
 		return
 	}
 	if !ok {
@@ -62,7 +60,7 @@ func (p SequenceOf3Parser[A, B, C]) Parse(in Input) (match SequenceOf3Result[A, 
 	match.A = prefix.A
 	match.B = prefix.B
 	c, ok, err := p.C.Parse(in)
-	if err != nil && err != io.EOF {
+	if err != nil {
 		return
 	}
 	if !ok {
