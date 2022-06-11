@@ -66,6 +66,19 @@ func TestRuneWhere(t *testing.T) {
 			expectedMatch: "A",
 			expectedOK:    true,
 		},
+		{
+			name:          "RuneInRanges: match",
+			input:         "     ",
+			parser:        RuneInRanges(unicode.White_Space),
+			expectedMatch: " ",
+			expectedOK:    true,
+		},
+		{
+			name:       "RuneInRanges: no match",
+			input:      "     ",
+			parser:     RuneInRanges(unicode.Han),
+			expectedOK: false,
+		},
 	}
 
 	for _, test := range tests {
