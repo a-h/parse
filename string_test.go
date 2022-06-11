@@ -26,6 +26,20 @@ func TestString(t *testing.T) {
 			expectedMatch: "ABC",
 			expectedOK:    true,
 		},
+		{
+			name:          "matches insensitive",
+			input:         "ABCDEF",
+			parser:        StringInsensitive("abc"),
+			expectedMatch: "ABC",
+			expectedOK:    true,
+		},
+		{
+			name:          "matches insensitive (inverse)",
+			input:         "abCDEF",
+			parser:        StringInsensitive("ABC"),
+			expectedMatch: "abC",
+			expectedOK:    true,
+		},
 	}
 
 	for _, test := range tests {
