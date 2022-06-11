@@ -1,5 +1,7 @@
 package parse
 
+import "strings"
+
 type RuneWhereParser struct {
 	F func(r rune) bool
 }
@@ -21,6 +23,14 @@ func RuneWhere(predicate func(r rune) bool) Parser[string] {
 	return RuneWhereParser{
 		F: predicate,
 	}
+}
+
+func RuneIn(s string) Parser[string] {
+	return RuneWhere(func(r rune) bool { return strings.Contains(s, string(r)) })
+}
+
+func RuneNotIn(s string) Parser[string] {
+	return RuneWhere(func(r rune) bool { return !strings.Contains(s, string(r)) })
 }
 
 // AnyRune matches any single rune.

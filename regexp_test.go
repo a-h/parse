@@ -2,6 +2,8 @@ package parse
 
 import (
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestRegexpParser(t *testing.T) {
@@ -29,16 +31,21 @@ func TestRegexpParser(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		in := NewInput(test.input)
-		match, ok, err := test.parser.Parse(in)
-		if err != nil {
-			t.Fatalf("failed to parse: %v", err)
-		}
-		if ok != test.expectedOK {
-			t.Errorf("expected ok=%v, got=%v", test.expectedOK, ok)
-		}
-		if test.expectedOK && match != test.expectedMatch {
-			t.Errorf("expected match=%q, got=%q", test.expectedMatch, match)
-		}
+		t.Run(test.name, func(t *testing.T) {
+			in := NewInput(test.input)
+			match, ok, err := test.parser.Parse(in)
+			if err != nil {
+				t.Fatalf("failed to parse: %v", err)
+			}
+			if ok != test.expectedOK {
+				t.Errorf("expected ok=%v, got=%v", test.expectedOK, ok)
+			}
+			if !test.expectedOK {
+				return
+			}
+			if diff := cmp.Diff(test.expectedMatch, match); diff != "" {
+				t.Error(diff)
+			}
+		})
 	}
 }
