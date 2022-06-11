@@ -7,7 +7,7 @@ import (
 )
 
 func TestThen(t *testing.T) {
-	tests := []ParserTest[parse.SequenceOf2Result[string, string]]{
+	tests := []ParserTest[parse.Tuple2[string, string]]{
 		{
 			name:       "no match",
 			input:      "ABCDEF",
@@ -18,7 +18,7 @@ func TestThen(t *testing.T) {
 			name:   "matches",
 			input:  "ABCDEF",
 			parser: parse.Then(parse.String("ABC"), parse.String("DEF")),
-			expectedMatch: parse.SequenceOf2Result[string, string]{
+			expectedMatch: parse.Tuple2[string, string]{
 				A: "ABC",
 				B: "DEF",
 			},
