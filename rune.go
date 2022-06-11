@@ -48,3 +48,6 @@ func RuneInRanges(ranges ...*unicode.RangeTable) Parser[string] {
 
 // AnyRune matches any single rune.
 var AnyRune = RuneWhere(func(r rune) bool { return true })
+
+// Letter returns a parser which accepts a rune within the Letter Unicode range.
+var Letter = RuneInRanges(unicode.Letter)

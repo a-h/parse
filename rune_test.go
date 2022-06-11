@@ -79,6 +79,13 @@ func TestRuneWhere(t *testing.T) {
 			parser:     RuneInRanges(unicode.Han),
 			expectedOK: false,
 		},
+		{
+			name:          "Letter: match",
+			input:         "a",
+			parser:        Letter,
+			expectedMatch: "a",
+			expectedOK:    true,
+		},
 	}
 
 	for _, test := range tests {
