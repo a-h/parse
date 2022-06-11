@@ -15,36 +15,50 @@ func TestTimes(t *testing.T) {
 		expectedOK    bool
 	}{
 		{
-			name:       "no match",
+			name:       "Times: no match",
 			input:      "ABCDEF",
 			parser:     Times(2, String("A")),
 			expectedOK: false,
 		},
 		{
-			name:          "times: matches",
+			name:          "Times: matches",
 			input:         "AAAA",
 			parser:        Times(3, String("A")),
 			expectedMatch: []string{"A", "A", "A"},
 			expectedOK:    true,
 		},
 		{
-			name:          "repeat: must be at least 1, and take up to 5",
+			name:          "Repeat: must be at least 1, and take up to 5",
 			input:         "AAAA",
 			parser:        Repeat(1, 5, String("A")),
 			expectedMatch: []string{"A", "A", "A", "A"},
 			expectedOK:    true,
 		},
 		{
-			name:       "repeat: min of 4, max of 5 - no match",
+			name:       "Repeat: min of 4, max of 5 - no match",
 			input:      "AAA",
 			parser:     Repeat(4, 5, String("A")),
 			expectedOK: false,
 		},
 		{
-			name:          "repeat: min of 0, max of 2 - matches",
+			name:          "Repeat: min of 0, max of 2 - matches",
 			input:         "AAA",
 			parser:        Repeat(0, 2, String("A")),
 			expectedMatch: []string{"A", "A"},
+			expectedOK:    true,
+		},
+		{
+			name:          "AtMost: success",
+			input:         "AAA",
+			parser:        AtMost(2, String("A")),
+			expectedMatch: []string{"A", "A"},
+			expectedOK:    true,
+		},
+		{
+			name:          "AtLeast: success",
+			input:         "AAA",
+			parser:        AtLeast(2, String("A")),
+			expectedMatch: []string{"A", "A", "A"},
 			expectedOK:    true,
 		},
 	}
