@@ -7,20 +7,21 @@ type StringParser struct {
 	Insensitive bool
 }
 
-func (sp StringParser) Parse(in Input) (match string, ok bool, err error) {
-	match, ok = in.Peek(len(sp.Match))
+func (p StringParser) Parse(in Input) (match string, ok bool, err error) {
+	match, ok = in.Peek(len(p.Match))
 	if !ok {
 		return
 	}
-	if sp.Insensitive {
-		ok = strings.EqualFold(sp.Match, match)
+	if p.Insensitive {
+		ok = strings.EqualFold(p.Match, match)
 	} else {
-		ok = sp.Match == match
+		ok = p.Match == match
 	}
 	if !ok {
+		match = ""
 		return
 	}
-	in.Chomp(len(sp.Match))
+	in.Chomp(len(p.Match))
 	return
 }
 

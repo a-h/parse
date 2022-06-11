@@ -5,21 +5,9 @@ type OrParser[A any, B any] struct {
 	B Parser[B]
 }
 
-type Option[T any] struct {
-	Value T
-	OK    bool
-}
-
-func OptionValue[T any](v T, ok bool) Option[T] {
-	return Option[T]{
-		Value: v,
-		OK:    ok,
-	}
-}
-
 type OrResult[A any, B any] struct {
-	A Option[A]
-	B Option[B]
+	A OptionalResult[A]
+	B OptionalResult[B]
 }
 
 func (p OrParser[A, B]) Parse(in Input) (match OrResult[A, B], ok bool, err error) {
@@ -28,14 +16,26 @@ func (p OrParser[A, B]) Parse(in Input) (match OrResult[A, B], ok bool, err erro
 		return
 	}
 	if ok {
-		return OrResult[A, B]{A: OptionValue(a, true)}, ok, err
+		match = OrResult[A, B]{
+			A: OptionalResult[A]{
+				Value: a,
+				OK:    true,
+			},
+		}
+		return
 	}
 	b, ok, err := p.B.Parse(in)
 	if err != nil {
 		return
 	}
 	if ok {
-		return OrResult[A, B]{B: OptionValue(b, true)}, ok, err
+		match = OrResult[A, B]{
+			B: OptionalResult[B]{
+				Value: b,
+				OK:    true,
+			},
+		}
+		return
 	}
 	return
 }

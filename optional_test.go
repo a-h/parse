@@ -6,30 +6,31 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestOr(t *testing.T) {
+func TestOptional(t *testing.T) {
 	tests := []struct {
 		name          string
 		input         string
-		parser        Parser[OrResult[string, string]]
-		expectedMatch OrResult[string, string]
+		parser        Parser[OptionalResult[string]]
+		expectedMatch OptionalResult[string]
 		expectedOK    bool
 	}{
 		{
-			name:          "no match",
-			input:         "C",
-			parser:        Or(Rune('A'), Rune('B')),
-			expectedMatch: OrResult[string, string]{},
-			expectedOK:    false,
+			name:   "Optional: it's not there, but that's OK",
+			input:  "ABCDEF",
+			parser: Optional(String("1")),
+			expectedMatch: OptionalResult[string]{
+				Value: "",
+				OK:    false,
+			},
+			expectedOK: true,
 		},
 		{
-			name:   "match",
-			input:  "A",
-			parser: Or(Rune('A'), Rune('B')),
-			expectedMatch: OrResult[string, string]{
-				A: OptionalResult[string]{
-					Value: "A",
-					OK:    true,
-				},
+			name:   "Optional: it's there, so return the value",
+			input:  "ABCDEF",
+			parser: Optional(String("A")),
+			expectedMatch: OptionalResult[string]{
+				Value: "A",
+				OK:    true,
 			},
 			expectedOK: true,
 		},
