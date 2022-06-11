@@ -61,6 +61,34 @@ func TestTimes(t *testing.T) {
 			expectedMatch: []string{"A", "A", "A"},
 			expectedOK:    true,
 		},
+		{
+			name:          "ZeroOrMore: nothing to get",
+			input:         "BB",
+			parser:        ZeroOrMore(String("A")),
+			expectedMatch: nil,
+			expectedOK:    true,
+		},
+		{
+			name:          "ZeroOrMore: something to get",
+			input:         "AA",
+			parser:        ZeroOrMore(String("A")),
+			expectedMatch: []string{"A", "A"},
+			expectedOK:    true,
+		},
+		{
+			name:          "OneOrMore: nothing to get",
+			input:         "BB",
+			parser:        OneOrMore(String("A")),
+			expectedMatch: nil,
+			expectedOK:    false,
+		},
+		{
+			name:          "OneOrMore: something to get",
+			input:         "AA",
+			parser:        OneOrMore(String("A")),
+			expectedMatch: []string{"A", "A"},
+			expectedOK:    true,
+		},
 	}
 
 	for _, test := range tests {
