@@ -6,4 +6,4 @@ import "unicode"
 var Whitespace Parser[string] = StringFrom(OneOrMore(RuneInRanges(unicode.White_Space)))
 
 // OptionalWhitespace parses optional whitespace.
-var OptionalWhitespace Parser[OptionalResult[string]] = Optional(Whitespace)
+var OptionalWhitespace Parser[Match[string]] = Optional(Whitespace)

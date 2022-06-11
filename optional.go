@@ -5,7 +5,7 @@ type optionalParser[T any] struct {
 	Insensitive bool
 }
 
-func (p optionalParser[T]) Parse(in Input) (match OptionalResult[T], ok bool, err error) {
+func (p optionalParser[T]) Parse(in Input) (match Match[T], ok bool, err error) {
 	var item T
 	item, ok, err = p.Parser.Parse(in)
 	if err != nil {
@@ -14,20 +14,20 @@ func (p optionalParser[T]) Parse(in Input) (match OptionalResult[T], ok bool, er
 	if !ok {
 		return match, true, nil
 	}
-	match = OptionalResult[T]{
+	match = Match[T]{
 		Value: item,
 		OK:    ok,
 	}
 	return match, true, nil
 }
 
-type OptionalResult[T any] struct {
+type Match[T any] struct {
 	Value T
 	OK    bool
 }
 
 // Optional converts the given parser into an optional parser.
-func Optional[T any](parser Parser[T]) Parser[OptionalResult[T]] {
+func Optional[T any](parser Parser[T]) Parser[Match[T]] {
 	return optionalParser[T]{
 		Parser: parser,
 	}
