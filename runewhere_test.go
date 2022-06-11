@@ -29,6 +29,13 @@ func TestRuneWhere(t *testing.T) {
 			expectedMatch: "A",
 			expectedOK:    true,
 		},
+		{
+			name:          "any rune",
+			input:         "ABCDEF",
+			parser:        AnyRune,
+			expectedMatch: "A",
+			expectedOK:    true,
+		},
 	}
 
 	for _, test := range tests {

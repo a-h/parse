@@ -22,3 +22,6 @@ func RuneWhere(predicate func(r rune) bool) Parser[string] {
 		F: predicate,
 	}
 }
+
+// AnyRune matches any single rune.
+var AnyRune = RuneWhere(func(r rune) bool { return true })
