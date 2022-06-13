@@ -7,12 +7,16 @@ type Input interface {
 	Peek(n int) (s string, ok bool)
 	// Advance by a number of runes, returns !ok if it's no possible because the end has been reached.
 	Chomp(n int) (s string, ok bool)
-	// Position returns the line and column number of the current position.
-	Position() (line, column int)
+	// Position returns the zero-bound index, line and column number of the current position within the stream.
+	Position() Position
 	// Index returns the current rune index of the parser input.
 	Index() int
 	// Seek to a location in the input.
 	Seek(index int) (ok bool)
+}
+
+type Position struct {
+	Index, Line, Col int
 }
 
 type pf[T any] struct {

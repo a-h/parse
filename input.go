@@ -1,5 +1,9 @@
 package parse
 
+import (
+	"sort"
+)
+
 // NewInput creates an input from the given string.
 func NewInput(s string) *InputString {
 	ip := &InputString{
@@ -42,16 +46,17 @@ func (in *InputString) Chomp(n int) (s string, ok bool) {
 	return in.s[from:in.charIndex], true
 }
 
-// Position returns the line and column number of the current position within the stream.
-func (in *InputString) Position() (line, column int) {
+// Position returns the zero-bound index, line and column number of the current position within the stream.
+func (in *InputString) Position() Position {
+	lineIndex := sort.Search(len(in.newLines), func(lineIndex int) bool {
+		return in.charIndex <= in.newLines[lineIndex]
+	})
 	var previousLineEnd int
-	for lineIndex, lineEnd := range in.newLines {
-		if in.charIndex > previousLineEnd && in.charIndex < lineEnd {
-			return lineIndex + 1, in.charIndex - previousLineEnd
-		}
-		previousLineEnd = lineEnd
+	if lineIndex > 0 {
+		previousLineEnd = in.newLines[lineIndex-1] + 1
 	}
-	return -1, -1
+	colIndex := in.charIndex - previousLineEnd
+	return Position{Index: in.charIndex, Line: lineIndex, Col: colIndex}
 }
 
 // Index returns the current character index of the parser input.
