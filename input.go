@@ -48,15 +48,20 @@ func (in *InputString) Chomp(n int) (s string, ok bool) {
 
 // Position returns the zero-bound index, line and column number of the current position within the stream.
 func (in *InputString) Position() Position {
+	return in.PositionAt(in.charIndex)
+}
+
+// Position returns the zero-bound index, line and column number of the current position within the stream.
+func (in *InputString) PositionAt(index int) Position {
 	lineIndex := sort.Search(len(in.newLines), func(lineIndex int) bool {
-		return in.charIndex <= in.newLines[lineIndex]
+		return index <= in.newLines[lineIndex]
 	})
 	var previousLineEnd int
 	if lineIndex > 0 {
 		previousLineEnd = in.newLines[lineIndex-1] + 1
 	}
 	colIndex := in.charIndex - previousLineEnd
-	return Position{Index: in.charIndex, Line: lineIndex, Col: colIndex}
+	return Position{Index: index, Line: lineIndex, Col: colIndex}
 }
 
 // Index returns the current character index of the parser input.

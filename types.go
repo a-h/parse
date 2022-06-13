@@ -9,6 +9,8 @@ type Input interface {
 	Chomp(n int) (s string, ok bool)
 	// Position returns the zero-bound index, line and column number of the current position within the stream.
 	Position() Position
+	// PositionAt returns the zero-bound index, line and column number of the given index within the stream.
+	PositionAt(index int) Position
 	// Index returns the current rune index of the parser input.
 	Index() int
 	// Seek to a location in the input.
