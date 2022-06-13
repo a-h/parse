@@ -7,3 +7,15 @@ var Whitespace Parser[string] = StringFrom(OneOrMore(RuneInRanges(unicode.White_
 
 // OptionalWhitespace parses optional whitespace.
 var OptionalWhitespace Parser[Match[string]] = Optional(Whitespace)
+
+// CR is a carriage return.
+var CR = Rune('\r')
+
+// CR parses a line feed, used by Unix systems as the newline.
+var LF = Rune('\n')
+
+// CRLF parses a carriage returned, followed by a line feed, used by Windows systems as the newline.
+var CRLF = String("\r\n")
+
+// NewLine matches either a Windows or Unix line break character.
+var NewLine = Any(CRLF, LF)
