@@ -1,13 +1,15 @@
 package parse
 
-type eofParser struct {
+type eofParser[T any] struct {
 }
 
-func (p eofParser) Parse(in Input) (match any, ok bool, err error) {
+func (p eofParser[T]) Parse(in Input) (match T, ok bool, err error) {
 	_, canAdvance := in.Peek(1)
 	ok = !canAdvance
 	return
 }
 
 // EOF matches the end of the input.
-var EOF Parser[any] = eofParser{}
+func EOF[T any]() Parser[T] {
+	return eofParser[T]{}
+}

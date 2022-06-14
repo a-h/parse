@@ -7,17 +7,17 @@ import (
 )
 
 func TestEOF(t *testing.T) {
-	tests := []ParserTest[any]{
+	tests := []ParserTest[string]{
 		{
 			name:       "no match",
 			input:      "A",
-			parser:     parse.EOF,
+			parser:     parse.EOF[string](),
 			expectedOK: false,
 		},
 		{
 			name:       "match",
 			input:      "",
-			parser:     parse.EOF,
+			parser:     parse.EOF[string](),
 			expectedOK: true,
 		},
 	}

@@ -19,7 +19,7 @@ func (p regexpParser) Parse(in Input) (match string, ok bool, err error) {
 		return
 	}
 	match = remainder[startAndEndIndex[0]:startAndEndIndex[1]]
-	in.Chomp(len(match))
+	in.Take(len(match))
 	return
 }
 

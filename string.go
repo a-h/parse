@@ -21,7 +21,7 @@ func (p stringParser) Parse(in Input) (match string, ok bool, err error) {
 		match = ""
 		return
 	}
-	in.Chomp(len(p.Match))
+	in.Take(len(p.Match))
 	return
 }
 

@@ -34,7 +34,7 @@ Line 3`
 	})
 	t.Run("chomping up to a line ending changes position, but doesn't start a newline", func(t *testing.T) {
 		in.Seek(0)
-		in.Chomp(len("Line 1"))
+		in.Take(len("Line 1"))
 		want := Position{6, 0, 6}
 		got := in.Position()
 		if diff := cmp.Diff(want, got); diff != "" {
@@ -43,7 +43,7 @@ Line 3`
 	})
 	t.Run("chomping a line ending changes position", func(t *testing.T) {
 		in.Seek(0)
-		in.Chomp(len("Line 1\n"))
+		in.Take(len("Line 1\n"))
 		want := Position{7, 1, 0}
 		got := in.Position()
 		if diff := cmp.Diff(want, got); diff != "" {
@@ -60,7 +60,7 @@ Line 3`
 	})
 	t.Run("partial lines can be read", func(t *testing.T) {
 		in.Seek(7)
-		s, ok := in.Chomp(len("Line "))
+		s, ok := in.Take(len("Line "))
 		if !ok {
 			t.Fatalf("failed to chomp line")
 		}
@@ -75,9 +75,9 @@ Line 3`
 	})
 	t.Run("all the lines can be read", func(t *testing.T) {
 		in.Seek(0)
-		in.Chomp(len("Line 1\n"))
-		in.Chomp(len("Line 2\n"))
-		in.Chomp(len("Line 3\n"))
+		in.Take(len("Line 1\n"))
+		in.Take(len("Line 2\n"))
+		in.Take(len("Line 3\n"))
 		want := Position{21, 3, 0}
 		got := in.Position()
 		if diff := cmp.Diff(want, got); diff != "" {

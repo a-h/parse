@@ -17,7 +17,7 @@ func (p stringUntilParser[T]) Parse(in Input) (match string, ok bool, err error)
 			in.Seek(beforeDelimiter)
 			break
 		}
-		_, chompOK := in.Chomp(1)
+		_, chompOK := in.Take(1)
 		if !chompOK {
 			if p.AllowEOF {
 				break
@@ -27,7 +27,7 @@ func (p stringUntilParser[T]) Parse(in Input) (match string, ok bool, err error)
 	}
 	end := in.Index()
 	in.Seek(start)
-	match, ok = in.Chomp(end - start)
+	match, ok = in.Take(end - start)
 	return
 }
 

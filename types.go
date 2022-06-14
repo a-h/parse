@@ -5,8 +5,8 @@ type Input interface {
 	// Peek n runes ahead, returns !ok if it's not possible to read that much.
 	// If n < 0, the remainder of the input is returned.
 	Peek(n int) (s string, ok bool)
-	// Advance by a number of runes, returns !ok if it's no possible because the end has been reached.
-	Chomp(n int) (s string, ok bool)
+	// Take a number of runes, returns !ok if it's no possible because the end has been reached.
+	Take(n int) (s string, ok bool)
 	// Position returns the zero-bound index, line and column number of the current position within the stream.
 	Position() Position
 	// PositionAt returns the zero-bound index, line and column number of the given index within the stream.

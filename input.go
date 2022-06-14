@@ -37,7 +37,7 @@ func (in *InputString) Peek(n int) (s string, ok bool) {
 	return in.s[in.charIndex : in.charIndex+n], true
 }
 
-func (in *InputString) Chomp(n int) (s string, ok bool) {
+func (in *InputString) Take(n int) (s string, ok bool) {
 	if in.charIndex+n > len(in.s) {
 		return
 	}

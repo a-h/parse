@@ -25,7 +25,7 @@ func (p runeWhereParser) Parse(in Input) (match string, ok bool, err error) {
 	if !ok {
 		return
 	}
-	in.Chomp(1)
+	in.Take(1)
 	return
 }
 

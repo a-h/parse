@@ -18,7 +18,7 @@ func (p stringFromParser[T]) Parse(in Input) (match string, ok bool, err error) 
 	}
 	end := in.Index()
 	in.Seek(start)
-	match, ok = in.Chomp(end - start)
+	match, ok = in.Take(end - start)
 	return
 }
 
