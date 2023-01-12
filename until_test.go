@@ -35,6 +35,18 @@ func TestUntil(t *testing.T) {
 			expectedMatch: []string{"A", "B", "C", "D", "E", "F"},
 			expectedOK:    true,
 		},
+		{
+			name:        "Until: return an error on primary failure",
+			input:       "ABCDEF",
+			parser:      parse.Until(parse.Parser[string](expectErrorParser{}), parse.AnyRune),
+			expectedErr: errTestParseError,
+		},
+		{
+			name:        "Until: return an error on delimiter failure",
+			input:       "ABCDEF",
+			parser:      parse.Until(parse.AnyRune, parse.Parser[string](expectErrorParser{})),
+			expectedErr: errTestParseError,
+		},
 	}
 	RunParserTests(t, tests)
 }

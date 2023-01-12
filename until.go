@@ -7,6 +7,19 @@ type untilParser[T, D any] struct {
 }
 
 func (p untilParser[T, D]) Parse(in Input) (match []T, ok bool, err error) {
+	if _, ok = in.Peek(1); !ok && p.AllowEOF {
+		ok = true
+		return
+	}
+	var m T
+	m, ok, err = p.Parser.Parse(in)
+	if err != nil {
+		return
+	}
+	if !ok {
+		return
+	}
+	match = append(match, m)
 	for {
 		beforeDelimiter := in.Index()
 		_, ok, err = p.Delimiter.Parse(in)
@@ -15,20 +28,22 @@ func (p untilParser[T, D]) Parse(in Input) (match []T, ok bool, err error) {
 		}
 		if ok {
 			in.Seek(beforeDelimiter)
-			break
+			return
 		}
 		if _, ok = in.Peek(1); !ok && p.AllowEOF {
 			ok = true
-			break
+			return
 		}
 		var m T
 		m, ok, err = p.Parser.Parse(in)
+		if err != nil {
+			return
+		}
 		if !ok {
 			return
 		}
 		match = append(match, m)
 	}
-	return
 }
 
 // Until matches until the delimiter is reached.
