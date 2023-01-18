@@ -22,15 +22,15 @@ type Position struct {
 }
 
 type pf[T any] struct {
-	f func(in Input) (item T, ok bool, err error)
+	f func(in Input) (item T, err error)
 }
 
-func (p pf[T]) Parse(in Input) (item T, ok bool, err error) {
+func (p pf[T]) Parse(in Input) (item T, err error) {
 	return p.f(in)
 }
 
 // Func creates a parser from an input function.
-func Func[T any](f func(in Input) (item T, ok bool, err error)) Parser[T] {
+func Func[T any](f func(in Input) (item T, err error)) Parser[T] {
 	return pf[T]{
 		f: f,
 	}
@@ -38,5 +38,5 @@ func Func[T any](f func(in Input) (item T, ok bool, err error)) Parser[T] {
 
 // Parser is implemented by all parsers.
 type Parser[T any] interface {
-	Parse(in Input) (item T, ok bool, err error)
+	Parse(in Input) (item T, err error)
 }

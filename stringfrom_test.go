@@ -13,14 +13,14 @@ func TestStringFrom(t *testing.T) {
 			input:         "ABCDEF",
 			parser:        parse.StringFrom(parse.String("ABC"), parse.String("123")),
 			expectedMatch: "",
-			expectedOK:    false,
+			expectedErr:   parse.ErrNotMatched,
 		},
 		{
 			name:          "matches",
 			input:         "ABCDEF",
 			parser:        parse.StringFrom(parse.MustRegexp("."), parse.MustRegexp("BC"), parse.String("DEF")),
 			expectedMatch: "ABCDEF",
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 	}
 	RunParserTests(t, tests)

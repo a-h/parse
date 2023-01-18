@@ -27,8 +27,7 @@ var uuidParser = parse.Convert(uuidStringParser, func(s string) (UUID, error) {
 func main() {
 	uuid := "123e4567-e89b-12d3-a456-426655440000"
 	input := parse.NewInput(uuid)
-	match, ok, err := uuidParser.Parse(input)
+	match, err := uuidParser.Parse(input)
 	fmt.Println("match:", match)
-	fmt.Println("ok:", ok)
 	fmt.Println("err:", err)
 }

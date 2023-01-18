@@ -16,7 +16,7 @@ func TestOptional(t *testing.T) {
 				Value: "",
 				OK:    false,
 			},
-			expectedOK: true,
+			expectedErr: nil,
 		},
 		{
 			name:   "Optional: it's there, so return the value",
@@ -26,7 +26,7 @@ func TestOptional(t *testing.T) {
 				Value: "A",
 				OK:    true,
 			},
-			expectedOK: true,
+			expectedErr: nil,
 		},
 	}
 	RunParserTests(t, tests)

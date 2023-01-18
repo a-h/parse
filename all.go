@@ -4,11 +4,11 @@ type allParser[T any] struct {
 	Parsers []Parser[T]
 }
 
-func (p allParser[T]) Parse(in Input) (match []T, ok bool, err error) {
+func (p allParser[T]) Parse(in Input) (match []T, err error) {
 	for _, parser := range p.Parsers {
 		var m T
-		m, ok, err = parser.Parse(in)
-		if err != nil || !ok {
+		m, err = parser.Parse(in)
+		if err != nil {
 			return
 		}
 		match = append(match, m)

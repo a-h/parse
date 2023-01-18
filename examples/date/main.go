@@ -19,24 +19,25 @@ func createYearMonthDayParser() parse.Parser[time.Time] {
 	// It returns a string array of all the parts.
 	date := parse.All(year, parse.Rune('-'), month, parse.Rune('-'), day)
 
-	f := func(in parse.Input) (match time.Time, ok bool, err error) {
+	f := func(in parse.Input) (match time.Time, err error) {
+		pos := in.Position()
 		var parts []string
-		parts, ok, err = date.Parse(in)
-		if err != nil || !ok {
+		parts, err = date.Parse(in)
+		if err != nil {
 			return
 		}
 		var y, m, d int
 		y, err = strconv.Atoi(parts[0])
 		if err != nil {
-			return match, false, fmt.Errorf("invalid year: %w", err)
+			return match, parse.Error(fmt.Sprintf("yearmonthday: invalid year: %v", err), pos)
 		}
 		m, err = strconv.Atoi(parts[2])
 		if err != nil {
-			return match, false, fmt.Errorf("invalid month: %w", err)
+			return match, parse.Error(fmt.Sprintf("yearmonthday: invalid month: %v", err), pos)
 		}
 		d, err = strconv.Atoi(parts[4])
 		if err != nil {
-			return match, false, fmt.Errorf("invalid day: %w", err)
+			return match, parse.Error(fmt.Sprintf("yearmonthday: invalid day: %v", err), pos)
 		}
 		match = time.Date(y, time.Month(m), d, 0, 0, 0, 0, time.UTC)
 		return
@@ -48,12 +49,9 @@ var YearMonthDay = createYearMonthDayParser()
 
 func main() {
 	input := parse.NewInput("2000-01-02")
-	dateParts, ok, err := YearMonthDay.Parse(input)
+	dateParts, err := YearMonthDay.Parse(input)
 	if err != nil {
 		log.Fatalf("failed to parse: %v", err)
-	}
-	if !ok {
-		log.Fatal("expected pattern not matched")
 	}
 	fmt.Println(dateParts)
 }

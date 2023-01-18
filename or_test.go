@@ -13,10 +13,10 @@ func TestOr(t *testing.T) {
 			input:         "C",
 			parser:        parse.Or(parse.Rune('A'), parse.Rune('B')),
 			expectedMatch: parse.Tuple2[parse.Match[string], parse.Match[string]]{},
-			expectedOK:    false,
+			expectedErr:   parse.ErrNotMatched,
 		},
 		{
-			name:   "match",
+			name:   "match A",
 			input:  "A",
 			parser: parse.Or(parse.Rune('A'), parse.Rune('B')),
 			expectedMatch: parse.Tuple2[parse.Match[string], parse.Match[string]]{
@@ -25,7 +25,19 @@ func TestOr(t *testing.T) {
 					OK:    true,
 				},
 			},
-			expectedOK: true,
+			expectedErr: nil,
+		},
+		{
+			name:   "match B",
+			input:  "B",
+			parser: parse.Or(parse.Rune('A'), parse.Rune('B')),
+			expectedMatch: parse.Tuple2[parse.Match[string], parse.Match[string]]{
+				B: parse.Match[string]{
+					Value: "B",
+					OK:    true,
+				},
+			},
+			expectedErr: nil,
 		},
 	}
 	RunParserTests(t, tests)

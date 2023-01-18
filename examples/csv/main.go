@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -17,47 +18,47 @@ var stringUntilEscapedCharacterOrDoubleQuote = parse.StringUntil(parse.Any(escap
 
 type QuotedStringParser struct{}
 
-func (p QuotedStringParser) Parse(in parse.Input) (match string, ok bool, err error) {
-	start := in.Index()
+func (p QuotedStringParser) Parse(in parse.Input) (match string, err error) {
+	start := in.Position()
 	// Start with a quote.
-	_, ok, err = doubleQuote.Parse(in)
-	if err != nil || !ok {
+	_, err = doubleQuote.Parse(in)
+	if err != nil {
 		// No match, so rewind.
-		in.Seek(start)
+		in.Seek(start.Index)
 		return
 	}
 	// Grab the contents.
 	var sb strings.Builder
 	for {
 		// Try for an escaped quote.
-		_, ok, err = escapedQuote.Parse(in)
-		if err != nil {
+		_, err = escapedQuote.Parse(in)
+		if err != nil && !errors.Is(err, parse.ErrNotMatched) {
 			return
 		}
-		if ok {
+		if !errors.Is(err, parse.ErrNotMatched) {
 			sb.WriteRune('"')
 			continue
 		}
 		// Or a terminating quote.
-		_, ok, err = doubleQuote.Parse(in)
-		if err != nil {
+		_, err = doubleQuote.Parse(in)
+		if err != nil && !errors.Is(err, parse.ErrNotMatched) {
 			return
 		}
-		if ok {
+		if !errors.Is(err, parse.ErrNotMatched) {
 			break
 		}
 		// Grab the runes.
-		match, ok, err = stringUntilEscapedCharacterOrDoubleQuote.Parse(in)
-		if err != nil {
+		match, err = stringUntilEscapedCharacterOrDoubleQuote.Parse(in)
+		if err != nil && !errors.Is(err, parse.ErrNotMatched) {
 			return
 		}
-		if ok {
+		if !errors.Is(err, parse.ErrNotMatched) {
 			sb.WriteString(match)
 			continue
 		}
 		// If we haven't gotten a match, we must have reached the end of the file.
 		// Without closing the string.
-		err = fmt.Errorf("unterminated quoted string from %v to %v", in.PositionAt(start), in.Position())
+		err = parse.Error("unterminated quoted string", start)
 	}
 	match = sb.String()
 	return
@@ -66,15 +67,15 @@ func (p QuotedStringParser) Parse(in parse.Input) (match string, ok bool, err er
 var quotedString = parse.Parser[string](QuotedStringParser{})
 var rowDelimiter = parse.NewLine
 var unquotedString = parse.StringUntil(parse.Any(colDelimiter, rowDelimiter, parse.EOF[string]()))
-var stringValueParser = parse.Func(func(in parse.Input) (match string, ok bool, err error) {
-	match, ok, err = parse.Any(quotedString, unquotedString).Parse(in)
+var stringValueParser = parse.Func(func(in parse.Input) (match string, err error) {
+	match, err = parse.Any(quotedString, unquotedString).Parse(in)
 	// Chomp the col delimiter, but we could also be at the end of the row, or file.
 	parse.Any(colDelimiter, rowDelimiter, parse.EOF[string]()).Parse(in)
 	return
 })
 
-var row parse.Parser[[]string] = parse.Func(func(in parse.Input) (match []string, ok bool, err error) {
-	match, ok, err = parse.UntilEOF(stringValueParser, rowDelimiter).Parse(in)
+var row parse.Parser[[]string] = parse.Func(func(in parse.Input) (match []string, err error) {
+	match, err = parse.UntilEOF(stringValueParser, rowDelimiter).Parse(in)
 	// Chomp the row terminator.
 	rowDelimiter.Parse(in)
 	return
@@ -87,14 +88,9 @@ func main() {
 "d",e,f
 "a string",123,456`
 	input := parse.NewInput(csvData)
-	//match, ok, err := CSV.Parse(input)
-	match, ok, err := row.Parse(input)
-	//match, ok, err := stringValueParser.Parse(input)
+	match, err := row.Parse(input)
 	if err != nil {
 		log.Fatalf("failed to parse: %v", err)
-	}
-	if !ok {
-		log.Print("expected CSV data not matched")
 	}
 	j, _ := json.Marshal(match)
 	fmt.Println(string(j))

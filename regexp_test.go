@@ -13,14 +13,14 @@ func TestRegexpParser(t *testing.T) {
 			input:         "ABCDEF",
 			parser:        parse.MustRegexp("BCD"),
 			expectedMatch: "",
-			expectedOK:    false,
+			expectedErr:   parse.ErrNotMatched,
 		},
 		{
 			name:          "matches the start of the string",
 			input:         "ABCDEF",
 			parser:        parse.MustRegexp("A"),
 			expectedMatch: "A",
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 	}
 	RunParserTests(t, tests)

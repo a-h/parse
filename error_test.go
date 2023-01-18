@@ -11,7 +11,7 @@ var errTestParseError = errors.New("parser failure")
 type expectErrorParser struct {
 }
 
-func (p expectErrorParser) Parse(in parse.Input) (match string, ok bool, err error) {
+func (p expectErrorParser) Parse(in parse.Input) (match string, err error) {
 	err = errTestParseError
 	return
 }

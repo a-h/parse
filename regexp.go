@@ -8,14 +8,16 @@ type regexpParser struct {
 	Expression *regexp.Regexp
 }
 
-func (p regexpParser) Parse(in Input) (match string, ok bool, err error) {
+func (p regexpParser) Parse(in Input) (match string, err error) {
 	remainder, ok := in.Peek(-1)
 	if !ok {
+		err = ErrNotMatched
 		return
 	}
 	startAndEndIndex := p.Expression.FindStringIndex(remainder)
 	ok = startAndEndIndex != nil && startAndEndIndex[0] == 0
 	if !ok {
+		err = ErrNotMatched
 		return
 	}
 	match = remainder[startAndEndIndex[0]:startAndEndIndex[1]]

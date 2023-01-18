@@ -5,13 +5,13 @@ type sequenceOf2Parser[A, B any] struct {
 	B Parser[B]
 }
 
-func (p sequenceOf2Parser[A, B]) Parse(in Input) (match Tuple2[A, B], ok bool, err error) {
-	match.A, ok, err = p.A.Parse(in)
-	if err != nil || !ok {
+func (p sequenceOf2Parser[A, B]) Parse(in Input) (match Tuple2[A, B], err error) {
+	match.A, err = p.A.Parse(in)
+	if err != nil {
 		return
 	}
-	match.B, ok, err = p.B.Parse(in)
-	if err != nil || !ok {
+	match.B, err = p.B.Parse(in)
+	if err != nil {
 		return
 	}
 	return

@@ -9,10 +9,10 @@ import (
 func TestThen(t *testing.T) {
 	tests := []ParserTest[parse.Tuple2[string, string]]{
 		{
-			name:       "no match",
-			input:      "ABCDEF",
-			parser:     parse.Then(parse.String("ABC"), parse.String("456")),
-			expectedOK: false,
+			name:        "no match",
+			input:       "ABCDEF",
+			parser:      parse.Then(parse.String("ABC"), parse.String("456")),
+			expectedErr: parse.ErrNotMatched,
 		},
 		{
 			name:   "matches",
@@ -22,7 +22,7 @@ func TestThen(t *testing.T) {
 				A: "ABC",
 				B: "DEF",
 			},
-			expectedOK: true,
+			expectedErr: nil,
 		},
 	}
 	RunParserTests(t, tests)

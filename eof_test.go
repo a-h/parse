@@ -9,16 +9,16 @@ import (
 func TestEOF(t *testing.T) {
 	tests := []ParserTest[string]{
 		{
-			name:       "no match",
-			input:      "A",
-			parser:     parse.EOF[string](),
-			expectedOK: false,
+			name:        "no match",
+			input:       "A",
+			parser:      parse.EOF[string](),
+			expectedErr: parse.ErrNotMatched,
 		},
 		{
-			name:       "match",
-			input:      "",
-			parser:     parse.EOF[string](),
-			expectedOK: true,
+			name:        "match",
+			input:       "",
+			parser:      parse.EOF[string](),
+			expectedErr: nil,
 		},
 	}
 	RunParserTests(t, tests)

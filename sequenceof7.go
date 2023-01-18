@@ -10,33 +10,33 @@ type sequenceOf7Parser[A, B, C, D, E, F, G any] struct {
 	G Parser[G]
 }
 
-func (p sequenceOf7Parser[A, B, C, D, E, F, G]) Parse(in Input) (match Tuple7[A, B, C, D, E, F, G], ok bool, err error) {
-	match.A, ok, err = p.A.Parse(in)
-	if err != nil || !ok {
+func (p sequenceOf7Parser[A, B, C, D, E, F, G]) Parse(in Input) (match Tuple7[A, B, C, D, E, F, G], err error) {
+	match.A, err = p.A.Parse(in)
+	if err != nil {
 		return
 	}
-	match.B, ok, err = p.B.Parse(in)
-	if err != nil || !ok {
+	match.B, err = p.B.Parse(in)
+	if err != nil {
 		return
 	}
-	match.C, ok, err = p.C.Parse(in)
-	if err != nil || !ok {
+	match.C, err = p.C.Parse(in)
+	if err != nil {
 		return
 	}
-	match.D, ok, err = p.D.Parse(in)
-	if err != nil || !ok {
+	match.D, err = p.D.Parse(in)
+	if err != nil {
 		return
 	}
-	match.E, ok, err = p.E.Parse(in)
-	if err != nil || !ok {
+	match.E, err = p.E.Parse(in)
+	if err != nil {
 		return
 	}
-	match.F, ok, err = p.F.Parse(in)
-	if err != nil || !ok {
+	match.F, err = p.F.Parse(in)
+	if err != nil {
 		return
 	}
-	match.G, ok, err = p.G.Parse(in)
-	if err != nil || !ok {
+	match.G, err = p.G.Parse(in)
+	if err != nil {
 		return
 	}
 	return

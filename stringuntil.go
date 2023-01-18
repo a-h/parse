@@ -1,19 +1,21 @@
 package parse
 
+import "errors"
+
 type stringUntilParser[T any] struct {
 	Delimiter Parser[T]
 	AllowEOF  bool
 }
 
-func (p stringUntilParser[T]) Parse(in Input) (match string, ok bool, err error) {
+func (p stringUntilParser[T]) Parse(in Input) (match string, err error) {
 	start := in.Index()
 	for {
 		beforeDelimiter := in.Index()
-		_, ok, err = p.Delimiter.Parse(in)
-		if err != nil {
+		_, err = p.Delimiter.Parse(in)
+		if err != nil && !errors.Is(err, ErrNotMatched) {
 			return
 		}
-		if ok {
+		if err == nil {
 			in.Seek(beforeDelimiter)
 			break
 		}
@@ -22,13 +24,13 @@ func (p stringUntilParser[T]) Parse(in Input) (match string, ok bool, err error)
 			if p.AllowEOF {
 				break
 			}
-			return "", false, nil
+			return "", ErrNotMatched
 		}
 	}
 	end := in.Index()
 	in.Seek(start)
-	match, ok = in.Take(end - start)
-	return
+	match, _ = in.Take(end - start)
+	return match, nil
 }
 
 // StringUntil matches until the delimiter is reached.

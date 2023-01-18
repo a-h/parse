@@ -13,28 +13,28 @@ func TestString(t *testing.T) {
 			input:         "ABCDEF",
 			parser:        parse.String("123"),
 			expectedMatch: "",
-			expectedOK:    false,
+			expectedErr:   parse.ErrNotMatched,
 		},
 		{
 			name:          "matches",
 			input:         "ABCDEF",
 			parser:        parse.String("ABC"),
 			expectedMatch: "ABC",
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 		{
 			name:          "matches insensitive",
 			input:         "ABCDEF",
 			parser:        parse.StringInsensitive("abc"),
 			expectedMatch: "ABC",
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 		{
 			name:          "matches insensitive (inverse)",
 			input:         "abCDEF",
 			parser:        parse.StringInsensitive("ABC"),
 			expectedMatch: "abC",
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 	}
 	RunParserTests(t, tests)

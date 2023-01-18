@@ -16,14 +16,15 @@ type runeWhereParser struct {
 	F func(r rune) bool
 }
 
-func (p runeWhereParser) Parse(in Input) (match string, ok bool, err error) {
+func (p runeWhereParser) Parse(in Input) (match string, err error) {
+	var ok bool
 	match, ok = in.Peek(1)
 	if !ok {
-		return
+		return "", ErrNotMatched
 	}
 	ok = p.F(rune(match[0]))
 	if !ok {
-		return
+		return "", ErrNotMatched
 	}
 	in.Take(1)
 	return

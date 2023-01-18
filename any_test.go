@@ -9,17 +9,17 @@ import (
 func TestAny(t *testing.T) {
 	tests := []ParserTest[string]{
 		{
-			name:       "no match",
-			input:      "C",
-			parser:     parse.Any(parse.Rune('A'), parse.Rune('B')),
-			expectedOK: false,
+			name:        "no match",
+			input:       "C",
+			parser:      parse.Any(parse.Rune('A'), parse.Rune('B')),
+			expectedErr: parse.ErrNotMatched,
 		},
 		{
 			name:          "match",
 			input:         "B",
 			parser:        parse.Any(parse.Rune('A'), parse.Rune('B')),
 			expectedMatch: "B",
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 	}
 	RunParserTests(t, tests)

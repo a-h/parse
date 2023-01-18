@@ -13,14 +13,14 @@ func TestZeroToNine(t *testing.T) {
 			input:         "ABCDEF",
 			parser:        parse.ZeroToNine,
 			expectedMatch: "",
-			expectedOK:    false,
+			expectedErr:   parse.ErrNotMatched,
 		},
 		{
 			name:          "match",
 			input:         "0",
 			parser:        parse.ZeroToNine,
 			expectedMatch: "0",
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 	}
 	RunParserTests(t, tests)

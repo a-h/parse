@@ -9,29 +9,29 @@ type sequenceOf6Parser[A, B, C, D, E, F any] struct {
 	F Parser[F]
 }
 
-func (p sequenceOf6Parser[A, B, C, D, E, F]) Parse(in Input) (match Tuple6[A, B, C, D, E, F], ok bool, err error) {
-	match.A, ok, err = p.A.Parse(in)
-	if err != nil || !ok {
+func (p sequenceOf6Parser[A, B, C, D, E, F]) Parse(in Input) (match Tuple6[A, B, C, D, E, F], err error) {
+	match.A, err = p.A.Parse(in)
+	if err != nil {
 		return
 	}
-	match.B, ok, err = p.B.Parse(in)
-	if err != nil || !ok {
+	match.B, err = p.B.Parse(in)
+	if err != nil {
 		return
 	}
-	match.C, ok, err = p.C.Parse(in)
-	if err != nil || !ok {
+	match.C, err = p.C.Parse(in)
+	if err != nil {
 		return
 	}
-	match.D, ok, err = p.D.Parse(in)
-	if err != nil || !ok {
+	match.D, err = p.D.Parse(in)
+	if err != nil {
 		return
 	}
-	match.E, ok, err = p.E.Parse(in)
-	if err != nil || !ok {
+	match.E, err = p.E.Parse(in)
+	if err != nil {
 		return
 	}
-	match.F, ok, err = p.F.Parse(in)
-	if err != nil || !ok {
+	match.F, err = p.F.Parse(in)
+	if err != nil {
 		return
 	}
 	return

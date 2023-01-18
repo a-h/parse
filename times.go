@@ -1,30 +1,32 @@
 package parse
 
+import "errors"
+
 type timesParser[T any] struct {
 	P   Parser[T]
 	Min int
 	Max func(i int) bool
 }
 
-func (p timesParser[T]) Parse(in Input) (match []T, ok bool, err error) {
+func (p timesParser[T]) Parse(in Input) (match []T, err error) {
 	start := in.Index()
 	for i := 0; p.Max(i); i++ {
 		var m T
-		m, ok, err = p.P.Parse(in)
-		if err != nil {
-			return match, false, err
+		m, err = p.P.Parse(in)
+		if err != nil && !errors.Is(err, ErrNotMatched) {
+			return
 		}
-		if !ok {
+		if errors.Is(err, ErrNotMatched) {
+			err = nil
 			break
 		}
 		match = append(match, m)
 	}
-	ok = len(match) >= p.Min && p.Max(len(match)-1)
-	if !ok {
+	if ok := len(match) >= p.Min && p.Max(len(match)-1); !ok {
 		in.Seek(start)
-		return nil, false, nil
+		return match, ErrNotMatched
 	}
-	return match, true, nil
+	return
 }
 
 // Times matches the given parser n times.

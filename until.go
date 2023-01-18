@@ -1,45 +1,39 @@
 package parse
 
+import "errors"
+
 type untilParser[T, D any] struct {
 	Parser    Parser[T]
 	Delimiter Parser[D]
 	AllowEOF  bool
 }
 
-func (p untilParser[T, D]) Parse(in Input) (match []T, ok bool, err error) {
-	if _, ok = in.Peek(1); !ok && p.AllowEOF {
-		ok = true
+func (p untilParser[T, D]) Parse(in Input) (match []T, err error) {
+	if _, ok := in.Peek(1); !ok && p.AllowEOF {
 		return
 	}
 	var m T
-	m, ok, err = p.Parser.Parse(in)
+	m, err = p.Parser.Parse(in)
 	if err != nil {
-		return
-	}
-	if !ok {
 		return
 	}
 	match = append(match, m)
 	for {
 		beforeDelimiter := in.Index()
-		_, ok, err = p.Delimiter.Parse(in)
-		if err != nil {
+		_, err = p.Delimiter.Parse(in)
+		if err != nil && !errors.Is(err, ErrNotMatched) {
 			return
 		}
-		if ok {
+		if err == nil {
 			in.Seek(beforeDelimiter)
 			return
 		}
-		if _, ok = in.Peek(1); !ok && p.AllowEOF {
-			ok = true
-			return
+		if _, ok := in.Peek(1); !ok && p.AllowEOF {
+			return match, nil
 		}
 		var m T
-		m, ok, err = p.Parser.Parse(in)
+		m, err = p.Parser.Parse(in)
 		if err != nil {
-			return
-		}
-		if !ok {
 			return
 		}
 		match = append(match, m)

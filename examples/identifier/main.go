@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -16,9 +17,9 @@ func createSpaceDelimiterIdentifierParser() parse.Parser[[]Identifier] {
 	// Parse multiple identifiers, space delimited.
 	// Allow ending on EOF as well as whitespace.
 	spaceDelimited := parse.OneOrMore(parse.Then(identifier, parse.Or(parse.Whitespace, parse.EOF[string]())))
-	return parse.Func(func(in parse.Input) (match []Identifier, ok bool, err error) {
-		m, ok, err := spaceDelimited.Parse(in)
-		if err != nil || !ok {
+	return parse.Func(func(in parse.Input) (match []Identifier, err error) {
+		m, err := spaceDelimited.Parse(in)
+		if err != nil {
 			return
 		}
 		for _, mm := range m {
@@ -32,12 +33,12 @@ var SpaceDelimitedIdentifiers = createSpaceDelimiterIdentifierParser()
 
 func main() {
 	input := parse.NewInput("validIdentifier1 validIdentifier2")
-	match, ok, err := SpaceDelimitedIdentifiers.Parse(input)
+	match, err := SpaceDelimitedIdentifiers.Parse(input)
+	if errors.Is(err, parse.ErrNotMatched) {
+		log.Fatal("expected pattern not matched")
+	}
 	if err != nil {
 		log.Fatalf("failed to parse: %v", err)
-	}
-	if !ok {
-		log.Fatal("expected pattern not matched")
 	}
 	fmt.Println(match)
 }

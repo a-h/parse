@@ -13,7 +13,6 @@ type ParserTest[T any] struct {
 	input         string
 	parser        parse.Parser[T]
 	expectedMatch T
-	expectedOK    bool
 	expectedErr   error
 }
 
@@ -21,7 +20,7 @@ func RunParserTests[T any](t *testing.T, tests []ParserTest[T]) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			in := parse.NewInput(test.input)
-			match, ok, err := test.parser.Parse(in)
+			match, err := test.parser.Parse(in)
 			if err != nil && test.expectedErr == nil {
 				t.Fatalf("unexpected parser error: %v", err)
 			}
@@ -32,12 +31,6 @@ func RunParserTests[T any](t *testing.T, tests []ParserTest[T]) {
 				if diff := cmp.Diff(test.expectedErr, err, cmpopts.EquateErrors()); diff != "" {
 					t.Errorf("error\n:%s", diff)
 				}
-				return
-			}
-			if ok != test.expectedOK {
-				t.Errorf("expected ok=%v, got=%v", test.expectedOK, ok)
-			}
-			if !test.expectedOK {
 				return
 			}
 			if diff := cmp.Diff(test.expectedMatch, match); diff != "" {

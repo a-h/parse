@@ -1,14 +1,16 @@
 package parse
 
+import "errors"
+
 type anyParser[T any] struct {
 	Parsers []Parser[T]
 }
 
-func (p anyParser[T]) Parse(in Input) (match T, ok bool, err error) {
+func (p anyParser[T]) Parse(in Input) (match T, err error) {
 	for _, parser := range p.Parsers {
-		match, ok, err = parser.Parse(in)
-		if err != nil || ok {
-			return
+		match, err = parser.Parse(in)
+		if err != nil && !errors.Is(err, ErrNotMatched) {
+			return match, err
 		}
 	}
 	return

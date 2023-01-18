@@ -1,38 +1,32 @@
 package parse
 
+import "errors"
+
 type orParser[A any, B any] struct {
 	A Parser[A]
 	B Parser[B]
 }
 
-func (p orParser[A, B]) Parse(in Input) (match Tuple2[Match[A], Match[B]], ok bool, err error) {
-	a, ok, err := p.A.Parse(in)
+func (p orParser[A, B]) Parse(in Input) (match Tuple2[Match[A], Match[B]], err error) {
+	match.A.Value, err = p.A.Parse(in)
+	if err != nil && !errors.Is(err, ErrNotMatched) {
+		return
+	}
+	match.A.OK = err == nil
+	if match.A.OK {
+		return
+	}
+
+	match.B.Value, err = p.B.Parse(in)
 	if err != nil {
 		return
 	}
-	if ok {
-		match = Tuple2[Match[A], Match[B]]{
-			A: Match[A]{
-				Value: a,
-				OK:    true,
-			},
-		}
+	match.B.OK = err == nil
+	if match.B.OK {
 		return
 	}
-	b, ok, err := p.B.Parse(in)
-	if err != nil {
-		return
-	}
-	if ok {
-		match = Tuple2[Match[A], Match[B]]{
-			B: Match[B]{
-				Value: b,
-				OK:    true,
-			},
-		}
-		return
-	}
-	return
+
+	return match, ErrNotMatched
 }
 
 // Or returns a success if either a or b can be parsed.

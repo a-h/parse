@@ -12,41 +12,41 @@ type sequenceOf9Parser[A, B, C, D, E, F, G, H, I any] struct {
 	I Parser[I]
 }
 
-func (p sequenceOf9Parser[A, B, C, D, E, F, G, H, I]) Parse(in Input) (match Tuple9[A, B, C, D, E, F, G, H, I], ok bool, err error) {
-	match.A, ok, err = p.A.Parse(in)
-	if err != nil || !ok {
+func (p sequenceOf9Parser[A, B, C, D, E, F, G, H, I]) Parse(in Input) (match Tuple9[A, B, C, D, E, F, G, H, I], err error) {
+	match.A, err = p.A.Parse(in)
+	if err != nil {
 		return
 	}
-	match.B, ok, err = p.B.Parse(in)
-	if err != nil || !ok {
+	match.B, err = p.B.Parse(in)
+	if err != nil {
 		return
 	}
-	match.C, ok, err = p.C.Parse(in)
-	if err != nil || !ok {
+	match.C, err = p.C.Parse(in)
+	if err != nil {
 		return
 	}
-	match.D, ok, err = p.D.Parse(in)
-	if err != nil || !ok {
+	match.D, err = p.D.Parse(in)
+	if err != nil {
 		return
 	}
-	match.E, ok, err = p.E.Parse(in)
-	if err != nil || !ok {
+	match.E, err = p.E.Parse(in)
+	if err != nil {
 		return
 	}
-	match.F, ok, err = p.F.Parse(in)
-	if err != nil || !ok {
+	match.F, err = p.F.Parse(in)
+	if err != nil {
 		return
 	}
-	match.G, ok, err = p.G.Parse(in)
-	if err != nil || !ok {
+	match.G, err = p.G.Parse(in)
+	if err != nil {
 		return
 	}
-	match.H, ok, err = p.H.Parse(in)
-	if err != nil || !ok {
+	match.H, err = p.H.Parse(in)
+	if err != nil {
 		return
 	}
-	match.I, ok, err = p.I.Parse(in)
-	if err != nil || !ok {
+	match.I, err = p.I.Parse(in)
+	if err != nil {
 		return
 	}
 	return

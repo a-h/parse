@@ -13,14 +13,14 @@ func TestWhitespace(t *testing.T) {
 			input:         "ABCDEF",
 			parser:        parse.Whitespace,
 			expectedMatch: "",
-			expectedOK:    false,
+			expectedErr:   parse.ErrNotMatched,
 		},
 		{
-			name: "match",
-			input: " 	ABC",
-			parser: parse.Whitespace,
+			name:          "match",
+			input:         " 	ABC",
+			parser:        parse.Whitespace,
 			expectedMatch: " 	",
-			expectedOK: true,
+			expectedErr:   nil,
 		},
 	}
 	RunParserTests(t, tests)
@@ -33,17 +33,17 @@ func TestOptionalWhitespace(t *testing.T) {
 			input:         "ABCDEF",
 			parser:        parse.OptionalWhitespace,
 			expectedMatch: parse.Match[string]{},
-			expectedOK:    true,
+			expectedErr:   nil,
 		},
 		{
-			name: "match",
-			input: " 	ABC",
+			name:   "match",
+			input:  " 	ABC",
 			parser: parse.OptionalWhitespace,
 			expectedMatch: parse.Match[string]{
 				Value: " 	",
-				OK: true,
+				OK:    true,
 			},
-			expectedOK: true,
+			expectedErr: nil,
 		},
 	}
 	RunParserTests(t, tests)

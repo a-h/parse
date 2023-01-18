@@ -1,24 +1,23 @@
 package parse
 
+import "errors"
+
 type optionalParser[T any] struct {
 	Parser      Parser[T]
 	Insensitive bool
 }
 
-func (p optionalParser[T]) Parse(in Input) (match Match[T], ok bool, err error) {
-	var item T
-	item, ok, err = p.Parser.Parse(in)
+func (p optionalParser[T]) Parse(in Input) (match Match[T], err error) {
+	match.Value, err = p.Parser.Parse(in)
+	if errors.Is(err, ErrNotMatched) {
+		match.OK = false
+		return match, nil
+	}
 	if err != nil {
 		return
 	}
-	if !ok {
-		return match, true, nil
-	}
-	match = Match[T]{
-		Value: item,
-		OK:    ok,
-	}
-	return match, true, nil
+	match.OK = true
+	return
 }
 
 type Match[T any] struct {
