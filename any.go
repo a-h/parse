@@ -12,6 +12,10 @@ func (p anyParser[T]) Parse(in Input) (match T, err error) {
 		if err != nil && !errors.Is(err, ErrNotMatched) {
 			return match, err
 		}
+		if errors.Is(err, ErrNotMatched) {
+			continue
+		}
+		return match, err
 	}
 	return
 }

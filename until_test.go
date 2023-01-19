@@ -47,6 +47,13 @@ func TestUntil(t *testing.T) {
 			parser:      parse.Until(parse.AnyRune, parse.Parser[string](expectErrorParser{})),
 			expectedErr: errTestParseError,
 		},
+		{
+			name:          "Until: comma",
+			input:         "0123,4567",
+			parser:        parse.Until(parse.ZeroToNine, parse.Rune(',')),
+			expectedMatch: []string{"0", "1", "2", "3"},
+			expectedErr:   nil,
+		},
 	}
 	RunParserTests(t, tests)
 }

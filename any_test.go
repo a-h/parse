@@ -15,7 +15,14 @@ func TestAny(t *testing.T) {
 			expectedErr: parse.ErrNotMatched,
 		},
 		{
-			name:          "match",
+			name:          "match A",
+			input:         "A",
+			parser:        parse.Any(parse.Rune('A'), parse.Rune('B')),
+			expectedMatch: "A",
+			expectedErr:   nil,
+		},
+		{
+			name:          "match B",
 			input:         "B",
 			parser:        parse.Any(parse.Rune('A'), parse.Rune('B')),
 			expectedMatch: "B",

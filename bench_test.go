@@ -1,12 +1,39 @@
 package parse_test
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
 
 	"github.com/a-h/parse"
 )
+
+func TestRow(t *testing.T) {
+	csvData := `a,b,c
+`
+	input := parse.NewInput(csvData)
+	row, err := row.Parse(input)
+	if len(row) != 3 {
+		t.Errorf("failed to parse: %v, %v", row, err)
+	}
+}
+
+func TestCSV(t *testing.T) {
+	csvData := `a,b,c
+"d",e,f
+"a string",123,456`
+	input := parse.NewInput(csvData)
+	rows, err := CSV.Parse(input)
+	if err != nil {
+		t.Fatalf("failed to parse: %v", err)
+	}
+	if len(rows) != 3 {
+		t.Errorf("expected 3 rows, got %d", len(rows))
+		j, _ := json.Marshal(rows)
+		t.Error(string(j))
+	}
+}
 
 func BenchmarkCSV(b *testing.B) {
 	b.ReportAllocs()
@@ -15,7 +42,7 @@ func BenchmarkCSV(b *testing.B) {
 "a string",123,456`
 	for i := 0; i < b.N; i++ {
 		input := parse.NewInput(csvData)
-		_, err := row.Parse(input)
+		_, err := CSV.Parse(input)
 		if err != nil {
 			b.Fatalf("failed to parse: %v", err)
 		}
@@ -78,19 +105,18 @@ func (p QuotedStringParser) Parse(in parse.Input) (match string, err error) {
 
 var quotedString = parse.Parser[string](QuotedStringParser{})
 var rowDelimiter = parse.NewLine
-var unquotedString = parse.StringUntil(parse.Any(colDelimiter, rowDelimiter, parse.EOF[string]()))
+var unquotedString = parse.StringUntilEOF(parse.Any(colDelimiter, rowDelimiter))
 var stringValueParser = parse.Func(func(in parse.Input) (match string, err error) {
 	match, err = parse.Any(quotedString, unquotedString).Parse(in)
-	// Chomp the col delimiter, but we could also be at the end of the row, or file.
-	parse.Any(colDelimiter, rowDelimiter, parse.EOF[string]()).Parse(in)
+	// Chomp the col delimiter.
+	colDelimiter.Parse(in)
 	return
 })
 
 var row parse.Parser[[]string] = parse.Func(func(in parse.Input) (match []string, err error) {
 	match, err = parse.UntilEOF(stringValueParser, rowDelimiter).Parse(in)
-	// Chomp the row terminator.
 	rowDelimiter.Parse(in)
 	return
 })
 
-var CSV parse.Parser[[][]string] = parse.UntilEOF(row, parse.Any(colDelimiter, parse.NewLine))
+var CSV parse.Parser[[][]string] = parse.Until(row, parse.EOF[string]())
