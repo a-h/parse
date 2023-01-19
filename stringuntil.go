@@ -5,7 +5,7 @@ type stringUntilParser[T any] struct {
 	AllowEOF  bool
 }
 
-func (p stringUntilParser[T]) Parse(in Input) (match string, ok bool, err error) {
+func (p stringUntilParser[T]) Parse(in *Input) (match string, ok bool, err error) {
 	start := in.Index()
 	for {
 		beforeDelimiter := in.Index()

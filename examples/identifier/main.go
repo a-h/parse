@@ -16,7 +16,7 @@ func createSpaceDelimiterIdentifierParser() parse.Parser[[]Identifier] {
 	// Parse multiple identifiers, space delimited.
 	// Allow ending on EOF as well as whitespace.
 	spaceDelimited := parse.OneOrMore(parse.Then(identifier, parse.Or(parse.Whitespace, parse.EOF[string]())))
-	return parse.Func(func(in parse.Input) (match []Identifier, ok bool, err error) {
+	return parse.Func(func(in *parse.Input) (match []Identifier, ok bool, err error) {
 		m, ok, err := spaceDelimited.Parse(in)
 		if err != nil || !ok {
 			return

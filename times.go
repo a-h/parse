@@ -6,7 +6,7 @@ type timesParser[T any] struct {
 	Max func(i int) bool
 }
 
-func (p timesParser[T]) Parse(in Input) (match []T, ok bool, err error) {
+func (p timesParser[T]) Parse(in *Input) (match []T, ok bool, err error) {
 	start := in.Index()
 	for i := 0; p.Max(i); i++ {
 		var m T
@@ -22,7 +22,7 @@ func (p timesParser[T]) Parse(in Input) (match []T, ok bool, err error) {
 	ok = len(match) >= p.Min && p.Max(len(match)-1)
 	if !ok {
 		in.Seek(start)
-		return nil, false, nil
+		return match, false, nil
 	}
 	return match, true, nil
 }

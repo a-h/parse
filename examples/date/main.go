@@ -19,7 +19,7 @@ func createYearMonthDayParser() parse.Parser[time.Time] {
 	// It returns a string array of all the parts.
 	date := parse.All(year, parse.Rune('-'), month, parse.Rune('-'), day)
 
-	f := func(in parse.Input) (match time.Time, ok bool, err error) {
+	f := func(in *parse.Input) (match time.Time, ok bool, err error) {
 		var parts []string
 		parts, ok, err = date.Parse(in)
 		if err != nil || !ok {

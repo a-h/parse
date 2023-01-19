@@ -10,7 +10,7 @@ type sequenceOf7Parser[A, B, C, D, E, F, G any] struct {
 	G Parser[G]
 }
 
-func (p sequenceOf7Parser[A, B, C, D, E, F, G]) Parse(in Input) (match Tuple7[A, B, C, D, E, F, G], ok bool, err error) {
+func (p sequenceOf7Parser[A, B, C, D, E, F, G]) Parse(in *Input) (match Tuple7[A, B, C, D, E, F, G], ok bool, err error) {
 	match.A, ok, err = p.A.Parse(in)
 	if err != nil || !ok {
 		return

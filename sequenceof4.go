@@ -7,7 +7,7 @@ type sequenceOf4Parser[A, B, C, D any] struct {
 	D Parser[D]
 }
 
-func (p sequenceOf4Parser[A, B, C, D]) Parse(in Input) (match Tuple4[A, B, C, D], ok bool, err error) {
+func (p sequenceOf4Parser[A, B, C, D]) Parse(in *Input) (match Tuple4[A, B, C, D], ok bool, err error) {
 	match.A, ok, err = p.A.Parse(in)
 	if err != nil || !ok {
 		return

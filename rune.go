@@ -16,7 +16,7 @@ type runeWhereParser struct {
 	F func(r rune) bool
 }
 
-func (p runeWhereParser) Parse(in Input) (match string, ok bool, err error) {
+func (p runeWhereParser) Parse(in *Input) (match string, ok bool, err error) {
 	match, ok = in.Peek(1)
 	if !ok {
 		return

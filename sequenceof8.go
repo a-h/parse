@@ -11,7 +11,7 @@ type sequenceOf8Parser[A, B, C, D, E, F, G, H any] struct {
 	H Parser[H]
 }
 
-func (p sequenceOf8Parser[A, B, C, D, E, F, G, H]) Parse(in Input) (match Tuple8[A, B, C, D, E, F, G, H], ok bool, err error) {
+func (p sequenceOf8Parser[A, B, C, D, E, F, G, H]) Parse(in *Input) (match Tuple8[A, B, C, D, E, F, G, H], ok bool, err error) {
 	match.A, ok, err = p.A.Parse(in)
 	if err != nil || !ok {
 		return

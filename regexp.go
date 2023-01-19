@@ -8,7 +8,7 @@ type regexpParser struct {
 	Expression *regexp.Regexp
 }
 
-func (p regexpParser) Parse(in Input) (match string, ok bool, err error) {
+func (p regexpParser) Parse(in *Input) (match string, ok bool, err error) {
 	remainder, ok := in.Peek(-1)
 	if !ok {
 		return

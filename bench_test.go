@@ -1,13 +1,52 @@
-package main
+package parse_test
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"strings"
+	"testing"
 
 	"github.com/a-h/parse"
 )
+
+func TestRow(t *testing.T) {
+	csvData := `a,b,c
+`
+	input := parse.NewInput(csvData)
+	row, ok, err := row.Parse(input)
+	if len(row) != 3 || !ok {
+		t.Errorf("failed to parse: %v, %v", row, err)
+	}
+}
+
+func TestCSV(t *testing.T) {
+	csvData := `a,b,c
+"d",e,f
+"a string",123,456`
+	input := parse.NewInput(csvData)
+	rows, ok, err := CSV.Parse(input)
+	if err != nil || !ok {
+		t.Fatalf("failed to parse: %v", err)
+	}
+	if len(rows) != 3 {
+		t.Errorf("expected 3 rows, got %d", len(rows))
+		j, _ := json.Marshal(rows)
+		t.Error(string(j))
+	}
+}
+
+func BenchmarkCSV(b *testing.B) {
+	b.ReportAllocs()
+	csvData := `a,b,c
+"d",e,f
+"a string",123,456`
+	for i := 0; i < b.N; i++ {
+		input := parse.NewInput(csvData)
+		_, ok, err := CSV.Parse(input)
+		if err != nil || !ok {
+			b.Fatalf("failed to parse: %v", err)
+		}
+	}
+}
 
 var colDelimiter = parse.Rune(',')
 var doubleQuote = parse.Rune('"')
@@ -18,12 +57,12 @@ var stringUntilEscapedCharacterOrDoubleQuote = parse.StringUntil(parse.Any(escap
 type QuotedStringParser struct{}
 
 func (p QuotedStringParser) Parse(in *parse.Input) (match string, ok bool, err error) {
-	start := in.Index()
+	start := in.Position()
 	// Start with a quote.
 	_, ok, err = doubleQuote.Parse(in)
 	if err != nil || !ok {
 		// No match, so rewind.
-		in.Seek(start)
+		in.Seek(start.Index)
 		return
 	}
 	// Grab the contents.
@@ -57,7 +96,7 @@ func (p QuotedStringParser) Parse(in *parse.Input) (match string, ok bool, err e
 		}
 		// If we haven't gotten a match, we must have reached the end of the file.
 		// Without closing the string.
-		err = fmt.Errorf("unterminated quoted string from %v to %v", in.PositionAt(start), in.Position())
+		err = parse.Error("unterminated quoted string", start)
 	}
 	match = sb.String()
 	return
@@ -65,37 +104,18 @@ func (p QuotedStringParser) Parse(in *parse.Input) (match string, ok bool, err e
 
 var quotedString = parse.Parser[string](QuotedStringParser{})
 var rowDelimiter = parse.NewLine
-var unquotedString = parse.StringUntil(parse.Any(colDelimiter, rowDelimiter, parse.EOF[string]()))
+var unquotedString = parse.StringUntilEOF(parse.Any(colDelimiter, rowDelimiter))
 var stringValueParser = parse.Func(func(in *parse.Input) (match string, ok bool, err error) {
 	match, ok, err = parse.Any(quotedString, unquotedString).Parse(in)
-	// Chomp the col delimiter, but we could also be at the end of the row, or file.
-	parse.Any(colDelimiter, rowDelimiter, parse.EOF[string]()).Parse(in)
+	// Chomp the col delimiter.
+	colDelimiter.Parse(in)
 	return
 })
 
 var row parse.Parser[[]string] = parse.Func(func(in *parse.Input) (match []string, ok bool, err error) {
 	match, ok, err = parse.UntilEOF(stringValueParser, rowDelimiter).Parse(in)
-	// Chomp the row terminator.
 	rowDelimiter.Parse(in)
 	return
 })
 
 var CSV parse.Parser[[][]string] = parse.Until(row, parse.EOF[string]())
-
-func main() {
-	csvData := `a,b,c
-"d",e,f
-"a string",123,456`
-	input := parse.NewInput(csvData)
-	//match, ok, err := CSV.Parse(input)
-	match, ok, err := row.Parse(input)
-	//match, ok, err := stringValueParser.Parse(input)
-	if err != nil {
-		log.Fatalf("failed to parse: %v", err)
-	}
-	if !ok {
-		log.Print("expected CSV data not matched")
-	}
-	j, _ := json.Marshal(match)
-	fmt.Println(string(j))
-}

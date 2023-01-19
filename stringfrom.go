@@ -4,7 +4,7 @@ type stringFromParser[T any] struct {
 	Parsers []Parser[T]
 }
 
-func (p stringFromParser[T]) Parse(in Input) (match string, ok bool, err error) {
+func (p stringFromParser[T]) Parse(in *Input) (match string, ok bool, err error) {
 	start := in.Index()
 	for _, parser := range p.Parsers {
 		_, ok, err = parser.Parse(in)

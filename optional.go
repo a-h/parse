@@ -5,18 +5,10 @@ type optionalParser[T any] struct {
 	Insensitive bool
 }
 
-func (p optionalParser[T]) Parse(in Input) (match Match[T], ok bool, err error) {
-	var item T
-	item, ok, err = p.Parser.Parse(in)
+func (p optionalParser[T]) Parse(in *Input) (match Match[T], ok bool, err error) {
+	match.Value, match.OK, err = p.Parser.Parse(in)
 	if err != nil {
 		return
-	}
-	if !ok {
-		return match, true, nil
-	}
-	match = Match[T]{
-		Value: item,
-		OK:    ok,
 	}
 	return match, true, nil
 }

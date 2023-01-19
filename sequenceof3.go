@@ -6,7 +6,7 @@ type sequenceOf3Parser[A, B, C any] struct {
 	C Parser[C]
 }
 
-func (p sequenceOf3Parser[A, B, C]) Parse(in Input) (match Tuple3[A, B, C], ok bool, err error) {
+func (p sequenceOf3Parser[A, B, C]) Parse(in *Input) (match Tuple3[A, B, C], ok bool, err error) {
 	match.A, ok, err = p.A.Parse(in)
 	if err != nil || !ok {
 		return

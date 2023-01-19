@@ -5,33 +5,25 @@ type orParser[A any, B any] struct {
 	B Parser[B]
 }
 
-func (p orParser[A, B]) Parse(in Input) (match Tuple2[Match[A], Match[B]], ok bool, err error) {
-	a, ok, err := p.A.Parse(in)
+func (p orParser[A, B]) Parse(in *Input) (match Tuple2[Match[A], Match[B]], ok bool, err error) {
+	match.A.Value, match.A.OK, err = p.A.Parse(in)
 	if err != nil {
 		return
 	}
-	if ok {
-		match = Tuple2[Match[A], Match[B]]{
-			A: Match[A]{
-				Value: a,
-				OK:    true,
-			},
-		}
+	if match.A.OK {
+		ok = true
 		return
 	}
-	b, ok, err := p.B.Parse(in)
+
+	match.B.Value, match.B.OK, err = p.B.Parse(in)
 	if err != nil {
 		return
 	}
-	if ok {
-		match = Tuple2[Match[A], Match[B]]{
-			B: Match[B]{
-				Value: b,
-				OK:    true,
-			},
-		}
+	if match.B.OK {
+		ok = true
 		return
 	}
+
 	return
 }
 

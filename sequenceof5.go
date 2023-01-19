@@ -8,7 +8,7 @@ type sequenceOf5Parser[A, B, C, D, E any] struct {
 	E Parser[E]
 }
 
-func (p sequenceOf5Parser[A, B, C, D, E]) Parse(in Input) (match Tuple5[A, B, C, D, E], ok bool, err error) {
+func (p sequenceOf5Parser[A, B, C, D, E]) Parse(in *Input) (match Tuple5[A, B, C, D, E], ok bool, err error) {
 	match.A, ok, err = p.A.Parse(in)
 	if err != nil || !ok {
 		return

@@ -7,7 +7,7 @@ type stringParser struct {
 	Insensitive bool
 }
 
-func (p stringParser) Parse(in Input) (match string, ok bool, err error) {
+func (p stringParser) Parse(in *Input) (match string, ok bool, err error) {
 	match, ok = in.Peek(len(p.Match))
 	if !ok {
 		return
@@ -18,8 +18,7 @@ func (p stringParser) Parse(in Input) (match string, ok bool, err error) {
 		ok = p.Match == match
 	}
 	if !ok {
-		match = ""
-		return
+		return "", false, nil
 	}
 	in.Take(len(p.Match))
 	return

@@ -5,8 +5,8 @@ import (
 )
 
 // NewInput creates an input from the given string.
-func NewInput(s string) *InputString {
-	ip := &InputString{
+func NewInput(s string) *Input {
+	ip := &Input{
 		s:         s,
 		charIndex: 0,
 	}
@@ -20,14 +20,14 @@ func NewInput(s string) *InputString {
 
 // InputString is an input used by parsers. It stores the current location
 // and character positions.
-type InputString struct {
+type Input struct {
 	s         string
 	charIndex int
 	// character positions of new line characters.
 	newLines []int
 }
 
-func (in *InputString) Peek(n int) (s string, ok bool) {
+func (in *Input) Peek(n int) (s string, ok bool) {
 	if in.charIndex+n > len(in.s) {
 		return
 	}
@@ -37,7 +37,7 @@ func (in *InputString) Peek(n int) (s string, ok bool) {
 	return in.s[in.charIndex : in.charIndex+n], true
 }
 
-func (in *InputString) Take(n int) (s string, ok bool) {
+func (in *Input) Take(n int) (s string, ok bool) {
 	if in.charIndex+n > len(in.s) {
 		return
 	}
@@ -47,12 +47,12 @@ func (in *InputString) Take(n int) (s string, ok bool) {
 }
 
 // Position returns the zero-bound index, line and column number of the current position within the stream.
-func (in *InputString) Position() Position {
+func (in *Input) Position() Position {
 	return in.PositionAt(in.charIndex)
 }
 
 // Position returns the zero-bound index, line and column number of the current position within the stream.
-func (in *InputString) PositionAt(index int) Position {
+func (in *Input) PositionAt(index int) Position {
 	lineIndex := sort.Search(len(in.newLines), func(lineIndex int) bool {
 		return index <= in.newLines[lineIndex]
 	})
@@ -65,12 +65,12 @@ func (in *InputString) PositionAt(index int) Position {
 }
 
 // Index returns the current character index of the parser input.
-func (in *InputString) Index() int {
+func (in *Input) Index() int {
 	return in.charIndex
 }
 
 // Seek to a position in the string.
-func (in *InputString) Seek(index int) (ok bool) {
+func (in *Input) Seek(index int) (ok bool) {
 	if index < 0 || index > len(in.s) {
 		return
 	}

@@ -6,7 +6,7 @@ type untilParser[T, D any] struct {
 	AllowEOF  bool
 }
 
-func (p untilParser[T, D]) Parse(in Input) (match []T, ok bool, err error) {
+func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
 	if _, ok = in.Peek(1); !ok && p.AllowEOF {
 		ok = true
 		return

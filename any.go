@@ -4,7 +4,7 @@ type anyParser[T any] struct {
 	Parsers []Parser[T]
 }
 
-func (p anyParser[T]) Parse(in Input) (match T, ok bool, err error) {
+func (p anyParser[T]) Parse(in *Input) (match T, ok bool, err error) {
 	for _, parser := range p.Parsers {
 		match, ok, err = parser.Parse(in)
 		if err != nil || ok {

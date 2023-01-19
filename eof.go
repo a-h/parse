@@ -3,7 +3,7 @@ package parse
 type eofParser[T any] struct {
 }
 
-func (p eofParser[T]) Parse(in Input) (match T, ok bool, err error) {
+func (p eofParser[T]) Parse(in *Input) (match T, ok bool, err error) {
 	_, canAdvance := in.Peek(1)
 	ok = !canAdvance
 	return

@@ -9,7 +9,7 @@ type sequenceOf6Parser[A, B, C, D, E, F any] struct {
 	F Parser[F]
 }
 
-func (p sequenceOf6Parser[A, B, C, D, E, F]) Parse(in Input) (match Tuple6[A, B, C, D, E, F], ok bool, err error) {
+func (p sequenceOf6Parser[A, B, C, D, E, F]) Parse(in *Input) (match Tuple6[A, B, C, D, E, F], ok bool, err error) {
 	match.A, ok, err = p.A.Parse(in)
 	if err != nil || !ok {
 		return
