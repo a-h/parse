@@ -7,7 +7,7 @@ type Position struct {
 }
 
 func (pos Position) String() string {
-	return fmt.Sprintf("%d:%d", pos.Line, pos.Col)
+	return fmt.Sprintf("line %d, col %d", pos.Line, pos.Col)
 }
 
 type pf[T any] struct {
