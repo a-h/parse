@@ -1,12 +1,20 @@
 package parse
 
-import "unicode"
+import (
+	"unicode"
+)
 
 // Whitespace parses whitespace.
 var Whitespace Parser[string] = StringFrom(OneOrMore(RuneInRanges(unicode.White_Space)))
 
 // OptionalWhitespace parses optional whitespace.
-var OptionalWhitespace Parser[Match[string]] = Optional(Whitespace)
+var OptionalWhitespace = Func(func(in *Input) (output string, ok bool, err error) {
+	output, ok, err = Whitespace.Parse(in)
+	if err != nil {
+		return
+	}
+	return output, true, nil
+})
 
 // CR is a carriage return.
 var CR = Rune('\r')

@@ -16,34 +16,31 @@ func TestWhitespace(t *testing.T) {
 			expectedOK:    false,
 		},
 		{
-			name: "match",
-			input: " 	ABC",
-			parser: parse.Whitespace,
+			name:          "match",
+			input:         " 	ABC",
+			parser:        parse.Whitespace,
 			expectedMatch: " 	",
-			expectedOK: true,
+			expectedOK:    true,
 		},
 	}
 	RunParserTests(t, tests)
 }
 
 func TestOptionalWhitespace(t *testing.T) {
-	tests := []ParserTest[parse.Match[string]]{
+	tests := []ParserTest[string]{
 		{
 			name:          "no match",
 			input:         "ABCDEF",
 			parser:        parse.OptionalWhitespace,
-			expectedMatch: parse.Match[string]{},
+			expectedMatch: "",
 			expectedOK:    true,
 		},
 		{
-			name: "match",
-			input: " 	ABC",
-			parser: parse.OptionalWhitespace,
-			expectedMatch: parse.Match[string]{
-				Value: " 	",
-				OK: true,
-			},
-			expectedOK: true,
+			name:          "match",
+			input:         " 	ABC",
+			parser:        parse.OptionalWhitespace,
+			expectedMatch: " 	",
+			expectedOK:    true,
 		},
 	}
 	RunParserTests(t, tests)
