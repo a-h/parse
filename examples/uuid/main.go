@@ -31,4 +31,5 @@ func main() {
 	fmt.Println("match:", match)
 	fmt.Println("ok:", ok)
 	fmt.Println("err:", err)
+	fmt.Println("pos:", input.Position())
 }

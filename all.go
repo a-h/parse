@@ -5,10 +5,12 @@ type allParser[T any] struct {
 }
 
 func (p allParser[T]) Parse(in *Input) (match []T, ok bool, err error) {
+	start := in.Index()
 	for _, parser := range p.Parsers {
 		var m T
 		m, ok, err = parser.Parse(in)
 		if err != nil || !ok {
+			in.Seek(start)
 			return
 		}
 		match = append(match, m)
