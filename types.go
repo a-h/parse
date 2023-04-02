@@ -1,7 +1,13 @@
 package parse
 
+import "fmt"
+
 type Position struct {
 	Index, Line, Col int
+}
+
+func (pos Position) String() string {
+	return fmt.Sprintf("%d:%d", pos.Line, pos.Col)
 }
 
 type pf[T any] struct {
