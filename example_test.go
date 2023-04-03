@@ -83,7 +83,7 @@ func ExampleParser() {
 		}
 
 		// Chomp the newline we read up to.
-		until.Parse(in)
+		_, _, _ = until.Parse(in)
 
 		return item, true, nil
 	})

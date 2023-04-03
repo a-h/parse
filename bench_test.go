@@ -108,13 +108,13 @@ var unquotedString = parse.StringUntilEOF(parse.Any(colDelimiter, rowDelimiter))
 var stringValueParser = parse.Func(func(in *parse.Input) (match string, ok bool, err error) {
 	match, ok, err = parse.Any(quotedString, unquotedString).Parse(in)
 	// Chomp the col delimiter.
-	colDelimiter.Parse(in)
+	_, _, _ = colDelimiter.Parse(in)
 	return
 })
 
 var row parse.Parser[[]string] = parse.Func(func(in *parse.Input) (match []string, ok bool, err error) {
 	match, ok, err = parse.UntilEOF(stringValueParser, rowDelimiter).Parse(in)
-	rowDelimiter.Parse(in)
+	_, _, _ = rowDelimiter.Parse(in)
 	return
 })
 
