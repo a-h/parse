@@ -7,6 +7,7 @@ type untilParser[T, D any] struct {
 }
 
 func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
+	start := in.Index()
 	if _, ok = in.Peek(1); !ok && p.AllowEOF {
 		ok = true
 		return
@@ -24,6 +25,7 @@ func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
 		beforeDelimiter := in.Index()
 		_, ok, err = p.Delimiter.Parse(in)
 		if err != nil {
+			in.Seek(start)
 			return
 		}
 		if ok {
@@ -37,9 +39,11 @@ func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
 		var m T
 		m, ok, err = p.Parser.Parse(in)
 		if err != nil {
+			in.Seek(start)
 			return
 		}
 		if !ok {
+			in.Seek(start)
 			return
 		}
 		match = append(match, m)
