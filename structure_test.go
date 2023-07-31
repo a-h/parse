@@ -39,7 +39,7 @@ func RunParserTests[T any](t *testing.T, tests []ParserTest[T]) {
 			}
 			if !test.expectedOK {
 				if in.Index() != 0 {
-					t.Error("Input not rolled back")
+					t.Error("input not rolled back")
 				}
 				return
 			}
