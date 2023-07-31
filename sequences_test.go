@@ -15,6 +15,12 @@ func TestSequence2(t *testing.T) {
 			expectedOK: false,
 		},
 		{
+			name:       "partial match",
+			input:      "ABCDEF",
+			parser:     parse.SequenceOf2(parse.String("ABC"), parse.String("123")),
+			expectedOK: false,
+		},
+		{
 			name:   "match",
 			input:  "ABCDEF",
 			parser: parse.SequenceOf2(parse.String("ABC"), parse.String("DEF")),
@@ -34,6 +40,12 @@ func TestSequence3(t *testing.T) {
 			name:       "no match",
 			input:      "ABCDEF",
 			parser:     parse.SequenceOf3(parse.String("12"), parse.String("34"), parse.String("56")),
+			expectedOK: false,
+		},
+		{
+			name:       "partial match",
+			input:      "ABCDEF",
+			parser:     parse.SequenceOf3(parse.String("AB"), parse.String("CD"), parse.String("56")),
 			expectedOK: false,
 		},
 		{
@@ -60,6 +72,12 @@ func TestSequence4(t *testing.T) {
 			expectedOK: false,
 		},
 		{
+			name:       "partial match",
+			input:      "ABCDEFGHIJ",
+			parser:     parse.SequenceOf4(parse.String("A"), parse.String("B"), parse.String("3"), parse.String("4")),
+			expectedOK: false,
+		},
+		{
 			name:   "match",
 			input:  "ABCDEFGHIJ",
 			parser: parse.SequenceOf4(parse.String("A"), parse.String("B"), parse.String("C"), parse.String("D")),
@@ -81,6 +99,12 @@ func TestSequence5(t *testing.T) {
 			name:       "no match",
 			input:      "ABCDEFGHIJ",
 			parser:     parse.SequenceOf5(parse.String("1"), parse.String("2"), parse.String("3"), parse.String("4"), parse.String("5")),
+			expectedOK: false,
+		},
+		{
+			name:       "partial match",
+			input:      "ABCDEFGHIJ",
+			parser:     parse.SequenceOf5(parse.String("A"), parse.String("2"), parse.String("3"), parse.String("4"), parse.String("5")),
 			expectedOK: false,
 		},
 		{
@@ -109,6 +133,12 @@ func TestSequence6(t *testing.T) {
 			expectedOK: false,
 		},
 		{
+			name:       "partial match",
+			input:      "ABCDEFGHIJ",
+			parser:     parse.SequenceOf6(parse.String("A"), parse.String("B"), parse.String("C"), parse.String("4"), parse.String("5"), parse.String("6")),
+			expectedOK: false,
+		},
+		{
 			name:   "match",
 			input:  "ABCDEFGHIJ",
 			parser: parse.SequenceOf6(parse.String("A"), parse.String("B"), parse.String("C"), parse.String("D"), parse.String("E"), parse.String("F")),
@@ -132,6 +162,12 @@ func TestSequence7(t *testing.T) {
 			name:       "no match",
 			input:      "ABCDEFGHIJ",
 			parser:     parse.SequenceOf7(parse.String("1"), parse.String("2"), parse.String("3"), parse.String("4"), parse.String("5"), parse.String("6"), parse.String("7")),
+			expectedOK: false,
+		},
+		{
+			name:       "partial match",
+			input:      "ABCDEFGHIJ",
+			parser:     parse.SequenceOf7(parse.String("A"), parse.String("B"), parse.String("3"), parse.String("4"), parse.String("5"), parse.String("6"), parse.String("7")),
 			expectedOK: false,
 		},
 		{
@@ -162,6 +198,12 @@ func TestSequence8(t *testing.T) {
 			expectedOK: false,
 		},
 		{
+			name:       "partial match",
+			input:      "ABCDEFGHIJ",
+			parser:     parse.SequenceOf8(parse.String("A"), parse.String("B"), parse.String("3"), parse.String("4"), parse.String("5"), parse.String("6"), parse.String("7"), parse.String("8")),
+			expectedOK: false,
+		},
+		{
 			name:   "match",
 			input:  "ABCDEFGHIJ",
 			parser: parse.SequenceOf8(parse.String("A"), parse.String("B"), parse.String("C"), parse.String("D"), parse.String("E"), parse.String("F"), parse.String("G"), parse.String("H")),
@@ -187,6 +229,12 @@ func TestSequence9(t *testing.T) {
 			name:       "no match",
 			input:      "ABCDEFGHIJ",
 			parser:     parse.SequenceOf9(parse.String("1"), parse.String("2"), parse.String("3"), parse.String("4"), parse.String("5"), parse.String("6"), parse.String("7"), parse.String("8"), parse.String("9")),
+			expectedOK: false,
+		},
+		{
+			name:       "partial match",
+			input:      "ABCDEFGHIJ",
+			parser:     parse.SequenceOf9(parse.String("A"), parse.String("B"), parse.String("C"), parse.String("D"), parse.String("5"), parse.String("6"), parse.String("7"), parse.String("8"), parse.String("9")),
 			expectedOK: false,
 		},
 		{

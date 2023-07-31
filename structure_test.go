@@ -38,6 +38,9 @@ func RunParserTests[T any](t *testing.T, tests []ParserTest[T]) {
 				t.Errorf("expected ok=%v, got=%v", test.expectedOK, ok)
 			}
 			if !test.expectedOK {
+				if in.Index() != 0 {
+					t.Error("input not rolled back")
+				}
 				return
 			}
 			if diff := cmp.Diff(test.expectedMatch, match); diff != "" {

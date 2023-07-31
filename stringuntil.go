@@ -11,6 +11,7 @@ func (p stringUntilParser[T]) Parse(in *Input) (match string, ok bool, err error
 		beforeDelimiter := in.Index()
 		_, ok, err = p.Delimiter.Parse(in)
 		if err != nil {
+			in.Seek(start)
 			return
 		}
 		if ok {
@@ -22,6 +23,7 @@ func (p stringUntilParser[T]) Parse(in *Input) (match string, ok bool, err error
 			if p.AllowEOF {
 				break
 			}
+			in.Seek(start)
 			return "", false, nil
 		}
 	}
