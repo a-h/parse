@@ -60,7 +60,7 @@ func (in *Input) PositionAt(index int) Position {
 	if lineIndex > 0 {
 		previousLineEnd = in.newLines[lineIndex-1] + 1
 	}
-	colIndex := in.charIndex - previousLineEnd
+	colIndex := index - previousLineEnd
 	return Position{Index: index, Line: lineIndex, Col: colIndex}
 }
 

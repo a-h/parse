@@ -85,3 +85,23 @@ Line 3`
 		}
 	})
 }
+
+func TestPositionAt(t *testing.T) {
+	input := `Here's some
+test text, just
+to test the
+newline count.`
+	pi := NewInput(input)
+	var positions []Position
+	for {
+		positions = append(positions, pi.Position())
+		if _, ok := pi.Take(1); !ok {
+			break
+		}
+	}
+	for i := 0; i < len(positions)-1; i++ {
+		if diff := cmp.Diff(positions[i], pi.PositionAt(i)); diff != "" {
+			t.Errorf("position %d: %s", i, diff)
+		}
+	}
+}
