@@ -16,6 +16,13 @@ func TestUntil(t *testing.T) {
 			expectedOK:    true,
 		},
 		{
+			name:          "Until: success with empty slice, delimiter and parser match at start but not subsequent",
+			input:         "ABCDEF",
+			parser:        parse.Until(parse.AnyRune, parse.Rune('A')),
+			expectedMatch: []string{},
+			expectedOK:    true,
+		},
+		{
 			name:       "Until: fail, reached EOF before delimiter was found",
 			input:      "ABCDEF",
 			parser:     parse.Until(parse.AnyRune, parse.String("G")),
@@ -38,7 +45,7 @@ func TestUntil(t *testing.T) {
 		{
 			name:        "Until: return an error on primary failure",
 			input:       "ABCDEF",
-			parser:      parse.Until(parse.Parser[string](expectErrorParser{}), parse.AnyRune),
+			parser:      parse.Until(parse.Parser[string](expectErrorParser{}), parse.Rune('B')),
 			expectedErr: errTestParseError,
 		},
 		{

@@ -12,15 +12,7 @@ func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
 		ok = true
 		return
 	}
-	var m T
-	m, ok, err = p.Parser.Parse(in)
-	if err != nil {
-		return
-	}
-	if !ok {
-		return
-	}
-	match = append(match, m)
+	match = make([]T, 0)
 	for {
 		beforeDelimiter := in.Index()
 		_, ok, err = p.Delimiter.Parse(in)
