@@ -31,7 +31,7 @@ func createSpaceDelimiterIdentifierParser() parse.Parser[[]Identifier] {
 var SpaceDelimitedIdentifiers = createSpaceDelimiterIdentifierParser()
 
 func main() {
-	input := parse.NewInput("validIdentifier1 validIdentifier2")
+	input := parse.NewInput([]byte("validIdentifier1 validIdentifier2"))
 	match, ok, err := SpaceDelimitedIdentifiers.Parse(input)
 	if err != nil {
 		log.Fatalf("failed to parse: %v", err)

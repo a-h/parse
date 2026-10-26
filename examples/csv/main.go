@@ -86,7 +86,7 @@ func main() {
 	csvData := `a,b,c
 "d",e,f
 "a string",123,456`
-	input := parse.NewInput(csvData)
+	input := parse.NewInput([]byte(csvData))
 	//match, ok, err := CSV.Parse(input)
 	match, ok, err := row.Parse(input)
 	//match, ok, err := stringValueParser.Parse(input)

@@ -20,7 +20,7 @@ type ParserTest[T any] struct {
 func RunParserTests[T any](t *testing.T, tests []ParserTest[T]) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			in := parse.NewInput(test.input)
+			in := parse.NewInput([]byte(test.input))
 			match, ok, err := test.parser.Parse(in)
 			if err != nil && test.expectedErr == nil {
 				t.Fatalf("unexpected parser error: %v", err)

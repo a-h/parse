@@ -42,7 +42,7 @@ var YearMonthDay = parse.Func(func(in *parse.Input) (match time.Time, ok bool, e
 })
 
 func main() {
-	input := parse.NewInput("2000-01-02")
+	input := parse.NewInput([]byte("2000-01-02"))
 	dateParts, ok, err := YearMonthDay.Parse(input)
 	if err != nil {
 		log.Fatalf("failed to parse: %v", err)

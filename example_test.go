@@ -10,8 +10,8 @@ import (
 func ExampleString() {
 	abParser := parse.Any(parse.String("A"))
 
-	fmt.Println(abParser.Parse(parse.NewInput("A")))
-	fmt.Println(abParser.Parse(parse.NewInput("B")))
+	fmt.Println(abParser.Parse(parse.NewInput([]byte("A"))))
+	fmt.Println(abParser.Parse(parse.NewInput([]byte("B"))))
 	// Output:
 	// A true <nil>
 	//  false <nil>
@@ -20,9 +20,9 @@ func ExampleString() {
 func ExampleAny() {
 	abParser := parse.Any(parse.String("A"), parse.String("B"))
 
-	fmt.Println(abParser.Parse(parse.NewInput("A")))
-	fmt.Println(abParser.Parse(parse.NewInput("B")))
-	fmt.Println(abParser.Parse(parse.NewInput("C")))
+	fmt.Println(abParser.Parse(parse.NewInput([]byte("A"))))
+	fmt.Println(abParser.Parse(parse.NewInput([]byte("B"))))
+	fmt.Println(abParser.Parse(parse.NewInput([]byte("C"))))
 	// Output:
 	// A true <nil>
 	// B true <nil>
@@ -32,9 +32,9 @@ func ExampleAny() {
 func ExampleAll() {
 	abcParser := parse.All(parse.String("A"), parse.String("B"), parse.String("C"))
 
-	fmt.Println(abcParser.Parse(parse.NewInput("ABC")))
-	fmt.Println(abcParser.Parse(parse.NewInput("AB")))
-	fmt.Println(abcParser.Parse(parse.NewInput("A")))
+	fmt.Println(abcParser.Parse(parse.NewInput([]byte("ABC"))))
+	fmt.Println(abcParser.Parse(parse.NewInput([]byte("AB"))))
+	fmt.Println(abcParser.Parse(parse.NewInput([]byte("A"))))
 	// Output:
 	// [A B C] true <nil>
 	// [A B] false <nil>
@@ -47,9 +47,9 @@ func ExampleOptional() {
 		parse.String("B"),
 	)
 
-	fmt.Println(abcParser.Parse(parse.NewInput("ABC")))
-	fmt.Println(abcParser.Parse(parse.NewInput("B")))
-	fmt.Println(abcParser.Parse(parse.NewInput("A")))
+	fmt.Println(abcParser.Parse(parse.NewInput([]byte("ABC"))))
+	fmt.Println(abcParser.Parse(parse.NewInput([]byte("B"))))
+	fmt.Println(abcParser.Parse(parse.NewInput([]byte("A"))))
 	// Output:
 	// AB true <nil>
 	// B true <nil>
@@ -95,7 +95,7 @@ func ExampleParser() {
 	}
 
 	for _, input := range inputs {
-		stmt, ok, err := gotoParser.Parse(parse.NewInput(input))
+		stmt, ok, err := gotoParser.Parse(parse.NewInput([]byte(input)))
 		fmt.Printf("%+v, ok=%v, err=%v\n", stmt, ok, err)
 	}
 	// Output:

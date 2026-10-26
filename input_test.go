@@ -12,7 +12,7 @@ Line 1
 Line 2
 Line 3`
 
-	in := NewInput(s)
+	in := NewInput([]byte(s))
 	t.Run("can peek forwards", func(t *testing.T) {
 		in.Seek(0)
 		r, ok := in.Peek(2)
@@ -91,7 +91,7 @@ func TestPositionAt(t *testing.T) {
 test text, just
 to test the
 newline count.`
-	pi := NewInput(input)
+	pi := NewInput([]byte(input))
 	var positions []Position
 	for {
 		positions = append(positions, pi.Position())
@@ -103,5 +103,61 @@ newline count.`
 		if diff := cmp.Diff(positions[i], pi.PositionAt(i)); diff != "" {
 			t.Errorf("position %d: %s", i, diff)
 		}
+	}
+}
+
+func TestInputPeekBytes(t *testing.T) {
+	tests := []struct {
+		name       string
+		index      int
+		n          int
+		expected   []byte
+		expectedOK bool
+	}{
+		{name: "peeking n bytes returns the next n bytes", index: 2, n: 3, expected: []byte("cde"), expectedOK: true},
+		{name: "peeking a negative count returns the rest of the input", index: 2, n: -1, expected: []byte("cdef"), expectedOK: true},
+		{name: "peeking past the end returns not ok", index: 4, n: 3, expected: nil, expectedOK: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			in := NewInput([]byte("abcdef"))
+			in.Seek(tt.index)
+			got, ok := in.PeekBytes(tt.n)
+			if ok != tt.expectedOK {
+				t.Fatalf("expected ok %v, got %v", tt.expectedOK, ok)
+			}
+			if diff := cmp.Diff(tt.expected, got); diff != "" {
+				t.Error(diff)
+			}
+			if in.Index() != tt.index {
+				t.Errorf("expected index %d, got %d", tt.index, in.Index())
+			}
+		})
+	}
+}
+
+func TestInputPeekBytesCannotBeAppendedIntoTheInput(t *testing.T) {
+	in := NewInput([]byte("abcdef"))
+	b, ok := in.PeekBytes(2)
+	if !ok {
+		t.Fatalf("expected ok")
+	}
+	b = append(b, 'x')
+	if diff := cmp.Diff([]byte("abx"), b); diff != "" {
+		t.Error(diff)
+	}
+	got, ok := in.Peek(-1)
+	if !ok {
+		t.Fatalf("expected ok")
+	}
+	if diff := cmp.Diff("abcdef", got); diff != "" {
+		t.Error(diff)
+	}
+	gotBytes, ok := in.PeekBytes(-1)
+	if !ok {
+		t.Fatalf("expected ok")
+	}
+	if diff := cmp.Diff([]byte("abcdef"), gotBytes); diff != "" {
+		t.Error(diff)
 	}
 }

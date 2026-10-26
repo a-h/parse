@@ -11,7 +11,7 @@ import (
 func TestRow(t *testing.T) {
 	csvData := `a,b,c
 `
-	input := parse.NewInput(csvData)
+	input := parse.NewInput([]byte(csvData))
 	row, ok, err := row.Parse(input)
 	if len(row) != 3 || !ok {
 		t.Errorf("failed to parse: %v, %v", row, err)
@@ -22,7 +22,7 @@ func TestCSV(t *testing.T) {
 	csvData := `a,b,c
 "d",e,f
 "a string",123,456`
-	input := parse.NewInput(csvData)
+	input := parse.NewInput([]byte(csvData))
 	rows, ok, err := CSV.Parse(input)
 	if err != nil || !ok {
 		t.Fatalf("failed to parse: %v", err)
@@ -36,9 +36,9 @@ func TestCSV(t *testing.T) {
 
 func BenchmarkCSV(b *testing.B) {
 	b.ReportAllocs()
-	csvData := `a,b,c
+	csvData := []byte(`a,b,c
 "d",e,f
-"a string",123,456`
+"a string",123,456`)
 	for i := 0; i < b.N; i++ {
 		input := parse.NewInput(csvData)
 		_, ok, err := CSV.Parse(input)
