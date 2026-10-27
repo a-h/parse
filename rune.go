@@ -3,12 +3,34 @@ package parse
 import (
 	"strings"
 	"unicode"
+	"unicode/utf8"
 )
+
+// byteParser matches a single ASCII byte. It is an integer type so that
+// converting it to a Parser does not allocate.
+type byteParser byte
+
+func (p byteParser) Parse(in *Input) (match string, ok bool, err error) {
+	match, ok = in.Peek(1)
+	if !ok || match[0] != byte(p) {
+		return "", false, nil
+	}
+	in.Take(1)
+	return
+}
+
+func (p byteParser) Match(in *Input) (ok bool, err error) {
+	_, ok, err = p.Parse(in)
+	return
+}
 
 // Rune matches a single rune.
 func Rune(r rune) Parser[string] {
+	if r >= 0 && r < utf8.RuneSelf {
+		return byteParser(r)
+	}
 	return stringParser{
-		Match: string(r),
+		Value: string(r),
 	}
 }
 
@@ -29,6 +51,11 @@ func (p runeWhereParser) Parse(in *Input) (match string, ok bool, err error) {
 	return
 }
 
+func (p runeWhereParser) Match(in *Input) (ok bool, err error) {
+	_, ok, err = p.Parse(in)
+	return
+}
+
 // RuneWhere matches a single rune using the given predicate function.
 func RuneWhere(predicate func(r rune) bool) Parser[string] {
 	return runeWhereParser{
@@ -38,12 +65,12 @@ func RuneWhere(predicate func(r rune) bool) Parser[string] {
 
 // RuneIn matches a single rune when the rune is in the string s.
 func RuneIn(s string) Parser[string] {
-	return RuneWhere(func(r rune) bool { return strings.Contains(s, string(r)) })
+	return RuneWhere(func(r rune) bool { return strings.ContainsRune(s, r) })
 }
 
 // RuneNotIn matches a single rune when the rune is not in the string s.
 func RuneNotIn(s string) Parser[string] {
-	return RuneWhere(func(r rune) bool { return !strings.Contains(s, string(r)) })
+	return RuneWhere(func(r rune) bool { return !strings.ContainsRune(s, r) })
 }
 
 // RuneInRanges matches a single rune when the rune is withig one of the given Unicode ranges.

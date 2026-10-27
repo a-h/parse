@@ -49,6 +49,45 @@ func (p sequenceOf7Parser[A, B, C, D, E, F, G]) Parse(in *Input) (match Tuple7[A
 	return
 }
 
+func (p sequenceOf7Parser[A, B, C, D, E, F, G]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	ok, err = p.A.Match(in)
+	if err != nil || !ok {
+		return
+	}
+	ok, err = p.B.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.C.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.D.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.E.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.F.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.G.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	return
+}
+
 func SequenceOf7[A, B, C, D, E, F, G any](a Parser[A], b Parser[B], c Parser[C], d Parser[D], e Parser[E], f Parser[F], g Parser[G]) Parser[Tuple7[A, B, C, D, E, F, G]] {
 	return sequenceOf7Parser[A, B, C, D, E, F, G]{
 		A: a,

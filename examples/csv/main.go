@@ -63,6 +63,10 @@ func (p QuotedStringParser) Parse(in *parse.Input) (match string, ok bool, err e
 	return
 }
 
+func (p QuotedStringParser) Match(in *parse.Input) (ok bool, err error) {
+	return parse.Match(p, in)
+}
+
 var quotedString = parse.Parser[string](QuotedStringParser{})
 var rowDelimiter = parse.NewLine
 var unquotedString = parse.StringUntil(parse.Any(colDelimiter, rowDelimiter, parse.EOF[string]()))

@@ -1,7 +1,8 @@
 package parse
 
 import (
-	"sort"
+	"bytes"
+	"slices"
 	"unsafe"
 )
 
@@ -13,11 +14,16 @@ func NewInput(b []byte) *Input {
 		b:         b,
 		s:         unsafe.String(unsafe.SliceData(b), len(b)),
 		charIndex: 0,
+		newLines:  make([]int, 0, bytes.Count(b, []byte{'\n'})),
 	}
-	for i, c := range b {
-		if c == '\n' {
-			ip.newLines = append(ip.newLines, i)
+	var offset int
+	for {
+		i := bytes.IndexByte(b[offset:], '\n')
+		if i < 0 {
+			break
 		}
+		ip.newLines = append(ip.newLines, offset+i)
+		offset += i + 1
 	}
 	return ip
 }
@@ -75,9 +81,7 @@ func (in *Input) Position() Position {
 
 // Position returns the zero-bound index, line and column number of the current position within the stream.
 func (in *Input) PositionAt(index int) Position {
-	lineIndex := sort.Search(len(in.newLines), func(lineIndex int) bool {
-		return index <= in.newLines[lineIndex]
-	})
+	lineIndex, _ := slices.BinarySearch(in.newLines, index)
 	var previousLineEnd int
 	if lineIndex > 0 {
 		previousLineEnd = in.newLines[lineIndex-1] + 1

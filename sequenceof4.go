@@ -31,6 +31,30 @@ func (p sequenceOf4Parser[A, B, C, D]) Parse(in *Input) (match Tuple4[A, B, C, D
 	return
 }
 
+func (p sequenceOf4Parser[A, B, C, D]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	ok, err = p.A.Match(in)
+	if err != nil || !ok {
+		return
+	}
+	ok, err = p.B.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.C.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.D.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	return
+}
+
 func SequenceOf4[A, B, C, D any](a Parser[A], b Parser[B], c Parser[C], d Parser[D]) Parser[Tuple4[A, B, C, D]] {
 	return sequenceOf4Parser[A, B, C, D]{
 		A: a,

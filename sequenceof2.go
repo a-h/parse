@@ -19,6 +19,20 @@ func (p sequenceOf2Parser[A, B]) Parse(in *Input) (match Tuple2[A, B], ok bool, 
 	return
 }
 
+func (p sequenceOf2Parser[A, B]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	ok, err = p.A.Match(in)
+	if err != nil || !ok {
+		return
+	}
+	ok, err = p.B.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	return
+}
+
 func SequenceOf2[A, B any](a Parser[A], b Parser[B]) Parser[Tuple2[A, B]] {
 	return sequenceOf2Parser[A, B]{
 		A: a,

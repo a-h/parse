@@ -61,6 +61,55 @@ func (p sequenceOf9Parser[A, B, C, D, E, F, G, H, I]) Parse(in *Input) (match Tu
 	return
 }
 
+func (p sequenceOf9Parser[A, B, C, D, E, F, G, H, I]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	ok, err = p.A.Match(in)
+	if err != nil || !ok {
+		return
+	}
+	ok, err = p.B.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.C.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.D.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.E.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.F.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.G.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.H.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.I.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	return
+}
+
 func SequenceOf9[A, B, C, D, E, F, G, H, I any](a Parser[A], b Parser[B], c Parser[C], d Parser[D], e Parser[E], f Parser[F], g Parser[G], h Parser[H], i Parser[I]) Parser[Tuple9[A, B, C, D, E, F, G, H, I]] {
 	return sequenceOf9Parser[A, B, C, D, E, F, G, H, I]{
 		A: a,

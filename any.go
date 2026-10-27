@@ -14,6 +14,16 @@ func (p anyParser[T]) Parse(in *Input) (match T, ok bool, err error) {
 	return
 }
 
+func (p anyParser[T]) Match(in *Input) (ok bool, err error) {
+	for _, parser := range p.Parsers {
+		ok, err = parser.Match(in)
+		if err != nil || ok {
+			return
+		}
+	}
+	return
+}
+
 // Any parses any one of the parsers in the list.
 func Any[T any](parsers ...Parser[T]) Parser[T] {
 	return anyParser[T]{

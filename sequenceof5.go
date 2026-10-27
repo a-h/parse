@@ -37,6 +37,35 @@ func (p sequenceOf5Parser[A, B, C, D, E]) Parse(in *Input) (match Tuple5[A, B, C
 	return
 }
 
+func (p sequenceOf5Parser[A, B, C, D, E]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	ok, err = p.A.Match(in)
+	if err != nil || !ok {
+		return
+	}
+	ok, err = p.B.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.C.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.D.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.E.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	return
+}
+
 func SequenceOf5[A, B, C, D, E any](a Parser[A], b Parser[B], c Parser[C], d Parser[D], e Parser[E]) Parser[Tuple5[A, B, C, D, E]] {
 	return sequenceOf5Parser[A, B, C, D, E]{
 		A: a,

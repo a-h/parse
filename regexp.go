@@ -23,6 +23,11 @@ func (p regexpParser) Parse(in *Input) (match string, ok bool, err error) {
 	return
 }
 
+func (p regexpParser) Match(in *Input) (ok bool, err error) {
+	_, ok, err = p.Parse(in)
+	return
+}
+
 // Regexp creates a parser that parses from the input's current position, or fails.
 func Regexp(exp string) (p Parser[string], err error) {
 	r, err := regexp.Compile(exp)

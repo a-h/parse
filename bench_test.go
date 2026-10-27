@@ -2,6 +2,7 @@ package parse_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -102,6 +103,10 @@ func (p QuotedStringParser) Parse(in *parse.Input) (match string, ok bool, err e
 	return
 }
 
+func (p QuotedStringParser) Match(in *parse.Input) (ok bool, err error) {
+	return parse.Match(p, in)
+}
+
 var quotedString = parse.Parser[string](QuotedStringParser{})
 var rowDelimiter = parse.NewLine
 var unquotedString = parse.StringUntilEOF(parse.Any(colDelimiter, rowDelimiter))
@@ -119,3 +124,82 @@ var row parse.Parser[[]string] = parse.Func(func(in *parse.Input) (match []strin
 })
 
 var CSV parse.Parser[[][]string] = parse.Until(row, parse.EOF[string]())
+
+func runParserBenchmark[T any](b *testing.B, input string, parser parse.Parser[T]) {
+	b.ReportAllocs()
+	in := parse.NewInput([]byte(input))
+	for b.Loop() {
+		in.Seek(0)
+		_, ok, err := parser.Parse(in)
+		if err != nil || !ok {
+			b.Fatalf("failed to parse: ok=%v, err=%v", ok, err)
+		}
+	}
+}
+
+func BenchmarkParseStrings(b *testing.B) {
+	benchmarks := []struct {
+		name   string
+		input  string
+		parser parse.Parser[string]
+	}{
+		{name: "Whitespace", input: "    \t\t    \n    \t\t    \n    x", parser: parse.Whitespace},
+		{name: "OptionalWhitespace", input: "    \t\t    \n    \t\t    \n    x", parser: parse.OptionalWhitespace},
+		{name: "StringFrom OneOrMore Letter", input: "abcdefghijklmnopqrstuvwxyz ", parser: parse.StringFrom(parse.OneOrMore(parse.Letter))},
+		{name: "StringFrom All", input: "</div>", parser: parse.StringFrom(parse.All(parse.String("</"), parse.String("div"), parse.Rune('>')))},
+		{name: "StringFrom Times", input: "2026-10-26", parser: parse.StringFrom(parse.Times(4, parse.ZeroToNine), parse.Rune('-'), parse.Times(2, parse.ZeroToNine), parse.Rune('-'), parse.Times(2, parse.ZeroToNine))},
+		{name: "StringUntil", input: "some text that runs until the end of a comment -->", parser: parse.StringUntil(parse.String("-->"))},
+		{name: "StringUntil RuneNotIn", input: "data-attribute-name=", parser: parse.StringUntil(parse.RuneNotIn("abcdefghijklmnopqrstuvwxyz-"))},
+		{name: "Rune", input: ">", parser: parse.Rune('>')},
+		{name: "RuneIn", input: "7", parser: parse.ZeroToNine},
+	}
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			runParserBenchmark(b, bm.input, bm.parser)
+		})
+	}
+}
+
+func BenchmarkParseSlices(b *testing.B) {
+	benchmarks := []struct {
+		name   string
+		input  string
+		parser parse.Parser[[]string]
+	}{
+		{name: "All", input: "</div>", parser: parse.All(parse.String("</"), parse.String("div"), parse.Rune('>'))},
+		{name: "Times", input: "12345678", parser: parse.Times(8, parse.ZeroToNine)},
+		{name: "ZeroOrMore", input: "aaaaaaaaaaaaaaaab", parser: parse.ZeroOrMore(parse.Rune('a'))},
+		{name: "Until", input: "abcdefgh;", parser: parse.Until(parse.Letter, parse.Rune(';'))},
+	}
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			runParserBenchmark(b, bm.input, bm.parser)
+		})
+	}
+}
+
+func BenchmarkConstructAndParse(b *testing.B) {
+	b.ReportAllocs()
+	in := parse.NewInput([]byte("</div>"))
+	for b.Loop() {
+		in.Seek(0)
+		_, ok, err := parse.All(parse.String("</"), parse.String("div"), parse.Rune('>')).Parse(in)
+		if err != nil || !ok {
+			b.Fatalf("failed to parse: ok=%v, err=%v", ok, err)
+		}
+	}
+}
+
+func BenchmarkNewInput(b *testing.B) {
+	for _, lines := range []int{10, 1000} {
+		data := []byte(strings.Repeat("<p>Some HTML content.</p>\n", lines))
+		b.Run(fmt.Sprintf("lines=%d", lines), func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				in := parse.NewInput(data)
+				in.Seek(len(data) / 2)
+				in.Position()
+			}
+		})
+	}
+}
