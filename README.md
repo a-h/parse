@@ -22,7 +22,7 @@ item, ok, err := parse.String("CD").Parse(input)
 
 ## Design
 
-A parser must match the `parse.Parser` interface, or be created by the use of the `parser.Func` helper. These 3 parsers are equivalent.
+A parser must match the `parse.Parser` interface, or be created by the use of the `parse.Func` helper. These 3 parsers are equivalent.
 
 ```go
 parse.String("<")
@@ -44,7 +44,13 @@ func (ltp lessThanParser) Parse(in *parse.Input) (item string, ok bool, err erro
 	ok = item == "<"
 	return
 }
+
+func (ltp lessThanParser) Match(in *parse.Input) (ok bool, err error) {
+	return parse.Match(ltp, in)
+}
 ```
+
+A `parse.Parser` is also a `parse.Matcher`. `Match` matches the input in the same way as `Parse`, but does not build a value. Parsers that only need to know how much input matched, such as `StringFrom` and `StringUntil`, call `Match`, so `parse.StringFrom(parse.OneOrMore(parse.Letter))` does not build a slice of letters. Implement the `Match` method by calling `parse.Match`, which parses the input and discards the value, unless the parser has a cheaper way to match it.
 
 ## Functions
 

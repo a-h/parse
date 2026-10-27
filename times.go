@@ -1,14 +1,16 @@
 package parse
 
+import "math"
+
 type timesParser[T any] struct {
 	P   Parser[T]
 	Min int
-	Max func(i int) bool
+	Max int
 }
 
 func (p timesParser[T]) Parse(in *Input) (match []T, ok bool, err error) {
 	start := in.Index()
-	for i := 0; p.Max(i); i++ {
+	for len(match) < p.Max {
 		var m T
 		m, ok, err = p.P.Parse(in)
 		if err != nil {
@@ -17,9 +19,12 @@ func (p timesParser[T]) Parse(in *Input) (match []T, ok bool, err error) {
 		if !ok {
 			break
 		}
+		if match == nil {
+			match = make([]T, 0, max(p.Min, 1))
+		}
 		match = append(match, m)
 	}
-	ok = len(match) >= p.Min && p.Max(len(match)-1)
+	ok = len(match) >= p.Min && len(match)-1 < p.Max
 	if !ok {
 		in.Seek(start)
 		return match, false, nil
@@ -27,12 +32,33 @@ func (p timesParser[T]) Parse(in *Input) (match []T, ok bool, err error) {
 	return match, true, nil
 }
 
+func (p timesParser[T]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	var count int
+	for count < p.Max {
+		ok, err = p.P.Match(in)
+		if err != nil {
+			return false, err
+		}
+		if !ok {
+			break
+		}
+		count++
+	}
+	ok = count >= p.Min && count-1 < p.Max
+	if !ok {
+		in.Seek(start)
+		return false, nil
+	}
+	return true, nil
+}
+
 // Times matches the given parser n times.
 func Times[T any](n int, p Parser[T]) Parser[[]T] {
 	return timesParser[T]{
 		P:   p,
 		Min: n,
-		Max: func(i int) bool { return i < n },
+		Max: n,
 	}
 }
 
@@ -41,7 +67,7 @@ func Repeat[T any](min, max int, p Parser[T]) Parser[[]T] {
 	return timesParser[T]{
 		P:   p,
 		Min: min,
-		Max: func(i int) bool { return i < max },
+		Max: max,
 	}
 }
 
@@ -50,7 +76,7 @@ func AtLeast[T any](min int, p Parser[T]) Parser[[]T] {
 	return timesParser[T]{
 		P:   p,
 		Min: min,
-		Max: func(i int) bool { return true },
+		Max: math.MaxInt,
 	}
 }
 
@@ -60,7 +86,7 @@ func AtMost[T any](max int, p Parser[T]) Parser[[]T] {
 	return timesParser[T]{
 		P:   p,
 		Min: 0,
-		Max: func(i int) bool { return i < max },
+		Max: max,
 	}
 }
 
@@ -69,7 +95,7 @@ func ZeroOrMore[T any](p Parser[T]) Parser[[]T] {
 	return timesParser[T]{
 		P:   p,
 		Min: 0,
-		Max: func(i int) bool { return true },
+		Max: math.MaxInt,
 	}
 }
 
@@ -78,6 +104,6 @@ func OneOrMore[T any](p Parser[T]) Parser[[]T] {
 	return timesParser[T]{
 		P:   p,
 		Min: 1,
-		Max: func(i int) bool { return true },
+		Max: math.MaxInt,
 	}
 }

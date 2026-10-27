@@ -43,6 +43,40 @@ func (p sequenceOf6Parser[A, B, C, D, E, F]) Parse(in *Input) (match Tuple6[A, B
 	return
 }
 
+func (p sequenceOf6Parser[A, B, C, D, E, F]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	ok, err = p.A.Match(in)
+	if err != nil || !ok {
+		return
+	}
+	ok, err = p.B.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.C.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.D.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.E.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.F.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	return
+}
+
 func SequenceOf6[A, B, C, D, E, F any](a Parser[A], b Parser[B], c Parser[C], d Parser[D], e Parser[E], f Parser[F]) Parser[Tuple6[A, B, C, D, E, F]] {
 	return sequenceOf6Parser[A, B, C, D, E, F]{
 		A: a,

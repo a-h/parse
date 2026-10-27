@@ -1,12 +1,12 @@
 package parse
 
-type untilParser[T, D any] struct {
+type untilParser[T any] struct {
 	Parser    Parser[T]
-	Delimiter Parser[D]
+	Delimiter Matcher
 	AllowEOF  bool
 }
 
-func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
+func (p untilParser[T]) Parse(in *Input) (match []T, ok bool, err error) {
 	start := in.Index()
 	if _, ok = in.Peek(1); !ok && p.AllowEOF {
 		ok = true
@@ -23,7 +23,7 @@ func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
 	match = append(match, m)
 	for {
 		beforeDelimiter := in.Index()
-		_, ok, err = p.Delimiter.Parse(in)
+		ok, err = p.Delimiter.Match(in)
 		if err != nil {
 			in.Seek(start)
 			return
@@ -50,17 +50,55 @@ func (p untilParser[T, D]) Parse(in *Input) (match []T, ok bool, err error) {
 	}
 }
 
+func (p untilParser[T]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	if _, ok = in.Peek(1); !ok && p.AllowEOF {
+		return true, nil
+	}
+	ok, err = p.Parser.Match(in)
+	if err != nil {
+		return
+	}
+	if !ok {
+		return
+	}
+	for {
+		beforeDelimiter := in.Index()
+		ok, err = p.Delimiter.Match(in)
+		if err != nil {
+			in.Seek(start)
+			return
+		}
+		if ok {
+			in.Seek(beforeDelimiter)
+			return
+		}
+		if _, ok = in.Peek(1); !ok && p.AllowEOF {
+			return true, nil
+		}
+		ok, err = p.Parser.Match(in)
+		if err != nil {
+			in.Seek(start)
+			return
+		}
+		if !ok {
+			in.Seek(start)
+			return
+		}
+	}
+}
+
 // Until matches until the delimiter is reached.
-func Until[T, D any](parser Parser[T], delimiter Parser[D]) Parser[[]T] {
-	return untilParser[T, D]{
+func Until[T any](parser Parser[T], delimiter Matcher) Parser[[]T] {
+	return untilParser[T]{
 		Parser:    parser,
 		Delimiter: delimiter,
 	}
 }
 
 // UntilEOF matches until the delimiter or the end of the file is reached.
-func UntilEOF[T, D any](parser Parser[T], delimiter Parser[D]) Parser[[]T] {
-	return untilParser[T, D]{
+func UntilEOF[T any](parser Parser[T], delimiter Matcher) Parser[[]T] {
+	return untilParser[T]{
 		Parser:    parser,
 		Delimiter: delimiter,
 		AllowEOF:  true,

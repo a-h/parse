@@ -26,6 +26,26 @@ func (p sequenceOf3Parser[A, B, C]) Parse(in *Input) (match Tuple3[A, B, C], ok 
 	return
 }
 
+func (p sequenceOf3Parser[A, B, C]) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	ok, err = p.A.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.B.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	ok, err = p.C.Match(in)
+	if err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	return
+}
+
 func SequenceOf3[A, B, C any](a Parser[A], b Parser[B], c Parser[C]) Parser[Tuple3[A, B, C]] {
 	return sequenceOf3Parser[A, B, C]{
 		A: a,

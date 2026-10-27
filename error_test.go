@@ -15,3 +15,7 @@ func (p expectErrorParser) Parse(in *parse.Input) (match string, ok bool, err er
 	err = errTestParseError
 	return
 }
+
+func (p expectErrorParser) Match(in *parse.Input) (ok bool, err error) {
+	return parse.Match(p, in)
+}

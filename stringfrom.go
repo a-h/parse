@@ -1,13 +1,25 @@
 package parse
 
-type stringFromParser[T any] struct {
-	Parsers []Parser[T]
+type stringFromParser struct {
+	Matchers []Matcher
 }
 
-func (p stringFromParser[T]) Parse(in *Input) (match string, ok bool, err error) {
+func (p stringFromParser) Parse(in *Input) (match string, ok bool, err error) {
 	start := in.Index()
-	for _, parser := range p.Parsers {
-		_, ok, err = parser.Parse(in)
+	ok, err = p.Match(in)
+	if err != nil || !ok {
+		return
+	}
+	end := in.Index()
+	in.Seek(start)
+	match, ok = in.Take(end - start)
+	return
+}
+
+func (p stringFromParser) Match(in *Input) (ok bool, err error) {
+	start := in.Index()
+	for _, matcher := range p.Matchers {
+		ok, err = matcher.Match(in)
 		if err != nil {
 			return
 		}
@@ -16,15 +28,12 @@ func (p stringFromParser[T]) Parse(in *Input) (match string, ok bool, err error)
 			return
 		}
 	}
-	end := in.Index()
-	in.Seek(start)
-	match, ok = in.Take(end - start)
 	return
 }
 
-// StringFrom returns the string range captured by the given parsers.
-func StringFrom[T any](parsers ...Parser[T]) Parser[string] {
-	return stringFromParser[T]{
-		Parsers: parsers,
+// StringFrom returns the string range captured by the given matchers.
+func StringFrom(matchers ...Matcher) Parser[string] {
+	return stringFromParser{
+		Matchers: matchers,
 	}
 }

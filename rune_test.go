@@ -83,3 +83,14 @@ func TestRuneWhere(t *testing.T) {
 	}
 	RunParserTests(t, tests)
 }
+
+func TestRune(t *testing.T) {
+	tests := []ParserTest[string]{
+		{name: "ASCII runes match", input: ">a", parser: parse.Rune('>'), expectedMatch: ">", expectedOK: true},
+		{name: "ASCII runes do not match other runes", input: "<a", parser: parse.Rune('>'), expectedOK: false},
+		{name: "ASCII runes do not match empty input", input: "", parser: parse.Rune('>'), expectedOK: false},
+		{name: "multi-byte runes match", input: "éa", parser: parse.Rune('é'), expectedMatch: "é", expectedOK: true},
+		{name: "multi-byte runes do not match other runes", input: "èa", parser: parse.Rune('é'), expectedOK: false},
+	}
+	RunParserTests(t, tests)
+}
